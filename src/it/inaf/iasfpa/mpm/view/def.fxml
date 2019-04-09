@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane stylesheets="@application_style.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.inaf.iasfpa.mpm.view.MainController">
+   <children>
+      <VBox layoutX="188.0" layoutY="47.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <MenuBar>
+              <menus>
+                <Menu mnemonicParsing="false" text="File">
+                  <items>
+                    <MenuItem mnemonicParsing="false" onAction="#exitButtonEvent" text="Close" />
+                  </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Edit">
+                  <items>
+                    <MenuItem mnemonicParsing="false" text="Delete" />
+                  </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Help">
+                  <items>
+                    <MenuItem mnemonicParsing="false" text="About" />
+                  </items>
+                </Menu>
+              </menus>
+            </MenuBar>
+            <HBox VBox.vgrow="ALWAYS">
+               <children>
+                  <VBox alignment="TOP_CENTER" spacing="5.0" styleClass="border-vhbox">
+                     <children>
+                        <HBox>
+                           <children>
+                              <Label text="Interface configuration">
+                                 <padding>
+                                    <Insets left="5.0" right="5.0" top="5.0" />
+                                 </padding>
+                              </Label>
+                           </children>
+                        </HBox>
+                        <Separator prefWidth="200.0">
+                           <padding>
+                              <Insets left="5.0" right="5.0" />
+                           </padding>
+                        </Separator>
+                        <Label text="ID DEVICE" />
+                        <ComboBox fx:id="idDevice" prefWidth="150.0" />
+                        <Label text="MODE" />
+                        <ComboBox fx:id="operationMode" onAction="#modeSelectedEvent" prefWidth="150.0" />
+                        <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="10.0" styleClass="border-vhbox">
+                           <children>
+                              <Label text="SCHEMATIC" />
+                              <ImageView fx:id="schematic" fitHeight="450.0" fitWidth="400.0" pickOnBounds="true" preserveRatio="true" />
+                           </children>
+                           <VBox.margin>
+                              <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                           </VBox.margin>
+                        </VBox>
+                        <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="10.0">
+                           <children>
+                              <Button fx:id="okButton" mnemonicParsing="false" onAction="#okButtonEvent" text="OK" />
+                              <Button fx:id="resetButton" mnemonicParsing="false" onAction="#resetButtonEvent" text="RESET" />
+                           </children>
+                        </HBox>
+                     </children>
+                     <HBox.margin>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                     </HBox.margin>
+                  </VBox>
+                  <VBox spacing="5.0" styleClass="border-vhbox" HBox.hgrow="ALWAYS">
+                     <children>
+                        <VBox styleClass="border-vhbox">
+                           <padding>
+                              <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                           </padding>
+                           <children>
+                              <Label text="Protocol Configuration">
+                                 <VBox.margin>
+                                    <Insets left="5.0" />
+                                 </VBox.margin>
+                              </Label>
+                              <Separator prefWidth="200.0">
+                                 <VBox.margin>
+                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                 </VBox.margin>
+                              </Separator>
+                              <VBox fx:id="dinamicVBox" alignment="CENTER" />
+                              <HBox alignment="CENTER" spacing="40.0">
+                                 <children>
+                                    <Button fx:id="connectButton" mnemonicParsing="false" onAction="#connectButtonEvent" text="CONNECT" />
+                                    <Button fx:id="disconnectButton" mnemonicParsing="false" onAction="#disconnectButtonEvent" text="DISCONNECT" />
+                                 </children>
+                              </HBox>
+                           </children>
+                        </VBox>
+                        <VBox alignment="CENTER_LEFT" spacing="5.0" styleClass="border-vhbox">
+                           <children>
+                              <Label text="Message Configuration">
+                                 <VBox.margin>
+                                    <Insets left="10.0" />
+                                 </VBox.margin>
+                              </Label>
+                              <Separator prefWidth="200.0">
+                                 <VBox.margin>
+                                    <Insets left="10.0" right="10.0" />
+                                 </VBox.margin>
+                              </Separator>
+                              <HBox alignment="CENTER" spacing="30.0">
+                                 <children>
+                                    <VBox alignment="CENTER_LEFT" spacing="5.0" styleClass="border-vhbox">
+                                       <children>
+                                          <Label text="DATA FORMAT" />
+                                          <RadioButton fx:id="charFormat" mnemonicParsing="false" text="CHAR">
+                                             <toggleGroup>
+                                                <ToggleGroup fx:id="group" />
+                                             </toggleGroup>
+                                          </RadioButton>
+                                          <RadioButton fx:id="hexFormat" mnemonicParsing="false" text="HEX INT" toggleGroup="$group" />
+                                       </children>
+                                       <HBox.margin>
+                                          <Insets />
+                                       </HBox.margin>
+                                       <padding>
+                                          <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                       </padding>
+                                    </VBox>
+                                    <VBox alignment="CENTER_LEFT" spacing="5.0" styleClass="border-vhbox">
+                                       <children>
+                                          <Label text="RECEIVE OPT." />
+                                          <RadioButton fx:id="radioButtonAck" mnemonicParsing="false" onAction="#receiveWithAckEvent" text="WITH ACK">
+                                             <toggleGroup>
+                                                <ToggleGroup fx:id="group1" />
+                                             </toggleGroup>
+                                          </RadioButton>
+                                          <RadioButton fx:id="radioButtonNack" mnemonicParsing="false" onAction="#receiveWithNackEvent" text="WITH NACK" toggleGroup="$group1" />
+                                       </children>
+                                       <padding>
+                                          <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                       </padding>
+                                       <HBox.margin>
+                                          <Insets />
+                                       </HBox.margin>
+                                    </VBox>
+                                    <VBox alignment="TOP_CENTER" styleClass="border-vhbox">
+                                       <children>
+                                          <Label text="NUMB. OF BYTE TO RECEIVE" />
+                                          <TextField fx:id="nbyte" />
+                                       </children>
+                                       <padding>
+                                          <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                       </padding>
+                                    </VBox>
+                                    <VBox alignment="TOP_CENTER" spacing="5.0" styleClass="border-vhbox">
+                                       <children>
+                                          <Label text="SLAVE ADDRESS" />
+                                          <ComboBox fx:id="slaveAddress" onAction="#slaveAddressComboEvent" prefWidth="150.0" />
+                                       </children>
+                                       <HBox.margin>
+                                          <Insets />
+                                       </HBox.margin>
+                                       <padding>
+                                          <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                       </padding>
+                                    </VBox>
+                                 </children>
+                                 <padding>
+                                    <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                 </padding>
+                              </HBox>
+                           </children>
+                           <VBox.margin>
+                              <Insets />
+                           </VBox.margin>
+                           <padding>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </padding>
+                        </VBox>
+                        <VBox spacing="5.0" styleClass="border-vhbox" VBox.vgrow="ALWAYS">
+                           <children>
+                              <Label text="Communication Console">
+                                 <VBox.margin>
+                                    <Insets left="5.0" />
+                                 </VBox.margin>
+                              </Label>
+                              <Separator prefWidth="200.0">
+                                 <VBox.margin>
+                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                 </VBox.margin>
+                              </Separator>
+                              <Label text="REQUEST">
+                                 <VBox.margin>
+                                    <Insets left="5.0" />
+                                 </VBox.margin>
+                              </Label>
+                              <TextField fx:id="request" prefHeight="25.0" prefWidth="416.0">
+                                 <VBox.margin>
+                                    <Insets left="5.0" right="5.0" />
+                                 </VBox.margin>
+                              </TextField>
+                              <HBox alignment="CENTER_RIGHT" spacing="15.0">
+                                 <children>
+                                    <Button fx:id="sendButton" mnemonicParsing="false" onAction="#sendButtonEvent" text="SEND" />
+                                    <Button fx:id="receiveButton" mnemonicParsing="false" onAction="#receiveButtonEvent" text="RECEIVE" />
+                                    <Button fx:id="sendReceiveButton" mnemonicParsing="false" onAction="#sendReceiveButtonEvent" text="SEND/RECEIVE" />
+                                 </children>
+                                 <padding>
+                                    <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                 </padding>
+                              </HBox>
+                              <Label text="HISTORY">
+                                 <padding>
+                                    <Insets left="5.0" />
+                                 </padding>
+                              </Label>
+                              <TextArea fx:id="response" editable="false" VBox.vgrow="ALWAYS">
+                                 <VBox.margin>
+                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                 </VBox.margin>
+                              </TextArea>
+                              <HBox alignment="CENTER_RIGHT" spacing="15.0">
+                                 <children>
+                                    <Button mnemonicParsing="false" onAction="#saveButtonEvent" text="SAVE" />
+                                    <Button fx:id="clearButton" mnemonicParsing="false" onAction="#clearButtonevent" text="CLEAR" />
+                                 </children>
+                                 <padding>
+                                    <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                 </padding>
+                              </HBox>
+                           </children>
+                           <padding>
+                              <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                           </padding>
+                        </VBox>
+                     </children>
+                     <HBox.margin>
+                        <Insets bottom="10.0" right="10.0" top="10.0" />
+                     </HBox.margin>
+                     <padding>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                     </padding>
+                  </VBox>
+               </children>
+            </HBox>
+            <Separator prefWidth="200.0" />
+            <HBox alignment="CENTER_LEFT">
+               <children>
+                  <Label fx:id="labelStatus" text="Label" />
+               </children>
+               <padding>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </padding>
+            </HBox>
+         </children>
+      </VBox>
+   </children>
+</AnchorPane>
