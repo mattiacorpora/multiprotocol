@@ -9,6 +9,12 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.RadioButton;
 
+/**
+ * FifoController
+ * @author M. Corpora, IASFPA, mattia.corpora@inaf.it
+ *
+ */
+
 public class FifoController implements Initializable {
 	
 	@FXML
