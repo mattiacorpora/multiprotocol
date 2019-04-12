@@ -9,6 +9,8 @@
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ToggleGroup?>
@@ -197,50 +199,67 @@
                                     <Insets left="5.0" />
                                  </VBox.margin>
                               </Label>
-                              <Separator prefWidth="200.0">
-                                 <VBox.margin>
-                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                 </VBox.margin>
-                              </Separator>
-                              <Label text="REQUEST">
-                                 <VBox.margin>
-                                    <Insets left="5.0" />
-                                 </VBox.margin>
-                              </Label>
-                              <TextField fx:id="request" prefHeight="25.0" prefWidth="416.0">
-                                 <VBox.margin>
-                                    <Insets left="5.0" right="5.0" />
-                                 </VBox.margin>
-                              </TextField>
-                              <HBox alignment="CENTER_RIGHT" spacing="15.0">
-                                 <children>
-                                    <Button fx:id="sendButton" mnemonicParsing="false" onAction="#sendButtonEvent" text="SEND" />
-                                    <Button fx:id="receiveButton" mnemonicParsing="false" onAction="#receiveButtonEvent" text="RECEIVE" />
-                                    <Button fx:id="sendReceiveButton" mnemonicParsing="false" onAction="#sendReceiveButtonEvent" text="SEND/RECEIVE" />
-                                 </children>
-                                 <padding>
-                                    <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                                 </padding>
-                              </HBox>
-                              <Label text="HISTORY">
-                                 <padding>
-                                    <Insets left="5.0" />
-                                 </padding>
-                              </Label>
-                              <TextArea fx:id="response" editable="false" VBox.vgrow="ALWAYS">
-                                 <VBox.margin>
-                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                 </VBox.margin>
-                              </TextArea>
-                              <HBox alignment="CENTER_RIGHT" spacing="15.0">
-                                 <children>
-                                    <Button mnemonicParsing="false" onAction="#saveButtonEvent" text="SAVE" />
-                                    <Button fx:id="clearButton" mnemonicParsing="false" onAction="#clearButtonevent" text="CLEAR" />
-                                 </children>
-                                 <padding>
-                                    <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                                 </padding>
-                              </HBox>
+                              <TabPane tabClosingPolicy="UNAVAILABLE">
+                                <tabs>
+                                  <Tab text="SINGLE">
+                                       <content>
+                                          <VBox>
+                                             <children>
+                                                <Separator prefWidth="200.0">
+                                                   <VBox.margin>
+                                                      <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                                   </VBox.margin>
+                                                </Separator>
+                                                <Label text="REQUEST">
+                                                   <VBox.margin>
+                                                      <Insets left="5.0" />
+                                                   </VBox.margin>
+                                                </Label>
+                                                <TextField fx:id="request" prefHeight="25.0" prefWidth="416.0">
+                                                   <VBox.margin>
+                                                      <Insets left="5.0" right="5.0" />
+                                                   </VBox.margin>
+                                                </TextField>
+                                                <HBox alignment="CENTER_RIGHT" spacing="15.0">
+                                                   <children>
+                                                      <Button fx:id="sendButton" mnemonicParsing="false" onAction="#sendButtonEvent" text="SEND" />
+                                                      <Button fx:id="receiveButton" mnemonicParsing="false" onAction="#receiveButtonEvent" text="RECEIVE" />
+                                                      <Button fx:id="sendReceiveButton" mnemonicParsing="false" onAction="#sendReceiveButtonEvent" text="SEND/RECEIVE" />
+                                                   </children>
+                                                   <padding>
+                                                      <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                                   </padding>
+                                                </HBox>
+                                                <Label text="HISTORY">
+                                                   <padding>
+                                                      <Insets left="5.0" />
+                                                   </padding>
+                                                </Label>
+                                                <TextArea fx:id="response" editable="false" VBox.vgrow="ALWAYS">
+                                                   <VBox.margin>
+                                                      <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                                   </VBox.margin>
+                                                </TextArea>
+                                                <HBox alignment="CENTER_RIGHT" spacing="15.0">
+                                                   <children>
+                                                      <Button mnemonicParsing="false" onAction="#saveButtonEvent" text="SAVE" />
+                                                      <Button fx:id="clearButton" mnemonicParsing="false" onAction="#clearButtonevent" text="CLEAR" />
+                                                   </children>
+                                                   <padding>
+                                                      <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                                   </padding>
+                                                </HBox>
+                                             </children>
+                                          </VBox>
+                                       </content>
+                                  </Tab>
+                                  <Tab text="MULTI">
+                                    <content>
+                                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                                    </content>
+                                  </Tab>
+                                </tabs>
+                              </TabPane>
                            </children>
                            <padding>
                               <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
