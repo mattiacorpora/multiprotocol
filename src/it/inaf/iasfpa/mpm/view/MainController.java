@@ -22,6 +22,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -30,9 +31,12 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import net.sf.yad2xx.Device;
 import net.sf.yad2xx.FTDIException;
 import net.sf.yad2xx.FTDIInterface;
@@ -81,7 +85,8 @@ public class MainController implements Initializable {
 	private I2cController sonContrI2C;
 	private SpiController sonContrSPI;
 	private FifoController sonContrFifo;
-	
+	private ScriptGuiController gui2Cont;
+	private Stage primaryStage;
 
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
@@ -452,6 +457,27 @@ public class MainController implements Initializable {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+	}
+	
+	@FXML
+	private void createButtonEvent() {
+		try {
+			FXMLLoader loader = new FXMLLoader();
+			loader.setLocation(MainApp.class.getResource("view/script_gui.fxml"));
+			AnchorPane page = (AnchorPane) loader.load();
+			gui2Cont = loader.getController();
+			Stage dialogStage = new Stage();
+			dialogStage.setTitle("Gui2");
+			dialogStage.initModality(Modality.WINDOW_MODAL);
+			dialogStage.initOwner(primaryStage);
+			Scene scene = new Scene(page);
+			dialogStage.setScene(scene);
+			dialogStage.showAndWait();
+
+		} catch (IOException e) {
+			e.printStackTrace();
+
 		}
 	}
 	
