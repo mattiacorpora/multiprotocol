@@ -1,20 +1,20 @@
 package it.inaf.iasfpa.mpm.utils;
 
 public class Script {
-	private SingleLine[] monitoring;
-	private SingleLine[] control;
+	private SingleCommand[] monitoring;
+	private SingleCommand[] control;
 	
 	
-	public SingleLine[] getMonitoring() {
+	public SingleCommand[] getMonitoring() {
 		return monitoring;
 	}
-	public void setMonitoring(SingleLine[] monitoring) {
+	public void setMonitoring(SingleCommand[] monitoring) {
 		this.monitoring = monitoring;
 	}
-	public SingleLine[] getControl() {
+	public SingleCommand[] getControl() {
 		return control;
 	}
-	public void setControl(SingleLine[] control) {
+	public void setControl(SingleCommand[] control) {
 		this.control = control;
 	}
 

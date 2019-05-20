@@ -96,7 +96,7 @@
                                     <Insets left="5.0" />
                                  </VBox.margin>
                               </Label>
-                              <Separator prefWidth="200.0">
+                              <Separator>
                                  <VBox.margin>
                                     <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                  </VBox.margin>
@@ -117,7 +117,7 @@
                                     <Insets left="10.0" />
                                  </VBox.margin>
                               </Label>
-                              <Separator prefWidth="200.0">
+                              <Separator>
                                  <VBox.margin>
                                     <Insets left="10.0" right="10.0" />
                                  </VBox.margin>
@@ -205,7 +205,7 @@
                                        <content>
                                           <VBox>
                                              <children>
-                                                <Separator prefWidth="200.0">
+                                                <Separator>
                                                    <VBox.margin>
                                                       <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                                    </VBox.margin>
@@ -215,7 +215,7 @@
                                                       <Insets left="5.0" />
                                                    </VBox.margin>
                                                 </Label>
-                                                <TextField fx:id="request" prefHeight="25.0" prefWidth="416.0">
+                                                <TextField fx:id="request">
                                                    <VBox.margin>
                                                       <Insets left="5.0" right="5.0" />
                                                    </VBox.margin>
@@ -257,31 +257,34 @@
                                     <content>
                                       <AnchorPane minHeight="0.0" minWidth="0.0">
                                              <children>
-                                                <VBox layoutX="239.0" layoutY="53.0" prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                <VBox layoutX="239.0" layoutY="53.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                                    <children>
                                                       <Label text="SCRIPT" />
-                                                      <TextArea prefHeight="200.0" prefWidth="200.0" />
+                                                      <TextArea fx:id="scriptArea" prefHeight="200.0" />
                                                       <HBox alignment="CENTER_RIGHT" spacing="15.0">
                                                          <children>
-                                                            <Button mnemonicParsing="false" onAction="#createButtonEvent" text="CREATE" />
-                                                            <Button mnemonicParsing="false" text="OPEN" />
-                                                            <Button mnemonicParsing="false" text="RUN" />
+                                                            <Button fx:id="createButton" mnemonicParsing="false" onAction="#createButtonEvent" text="CREATE" />
+                                                            <Button fx:id="openButton" mnemonicParsing="false" onAction="#openButtonEvent" text="OPEN" />
+                                                            <Button fx:id="runMonitoring" mnemonicParsing="false" onAction="#runMonitoringEvent" text="RUN MONITORING" />
+                                                            <Button fx:id="runControl" mnemonicParsing="false" onAction="#runControlEvent" text="RUN CONTROL" />
+                                                            <Button fx:id="stopMonitoring" mnemonicParsing="false" onAction="#stopMonitoringEvent" text="STOP MONITORING" />
+                                                            <Button fx:id="stopControl" mnemonicParsing="false" onAction="#stopControlEvent" text="STOP CONTROL" />
                                                          </children>
                                                          <padding>
                                                             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                                          </padding>
                                                       </HBox>
-                                                      <Separator prefWidth="200.0">
+                                                      <Separator>
                                                          <VBox.margin>
                                                             <Insets bottom="5.0" top="5.0" />
                                                          </VBox.margin>
                                                       </Separator>
                                                       <Label text="HISTORY" />
-                                                      <TextArea prefHeight="200.0" prefWidth="200.0" />
+                                                      <TextArea fx:id="hystory" prefHeight="200.0" />
                                                       <HBox alignment="CENTER_RIGHT" spacing="15.0">
                                                          <children>
-                                                            <Button mnemonicParsing="false" text="CLEAR" />
-                                                            <Button mnemonicParsing="false" text="SAVE" />
+                                                            <Button fx:id="clearButton2" mnemonicParsing="false" onAction="#clearHystory2" text="CLEAR" />
+                                                            <Button fx:id="saveButton2" mnemonicParsing="false" onAction="#saveHystory2" text="SAVE" />
                                                          </children>
                                                          <padding>
                                                             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />

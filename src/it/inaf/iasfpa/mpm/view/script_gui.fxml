@@ -27,6 +27,8 @@
                <children>
                   <Label text="MESSAGE" />
                   <TextField fx:id="message" />
+                  <Label text="+ N° of 0" />
+                  <TextField fx:id="nOfZero" />
                   <Label text="+" />
                   <ComboBox fx:id="errorControl" prefWidth="150.0" />
                   <Separator orientation="VERTICAL" />
@@ -107,9 +109,9 @@
             <HBox alignment="CENTER_RIGHT" spacing="15.0">
                <children>
                   <Button fx:id="removeLine" mnemonicParsing="false" onAction="#removeLineButtonEvent" text="REMOVE LINE" />
-                  <Button fx:id="open" mnemonicParsing="false" text="OPEN" />
+                  <Button fx:id="open" mnemonicParsing="false" onAction="#openButtonEvent" text="OPEN" />
                   <Button fx:id="save" mnemonicParsing="false" onAction="#saveButtonEvent" text="SAVE" />
-                  <Button fx:id="load" mnemonicParsing="false" text="LOAD" />
+                  <Button fx:id="load" mnemonicParsing="false" onAction="#loadButtonEvent" text="LOAD" />
                </children>
                <padding>
                   <Insets bottom="5.0" left="5.0" right="10.0" top="5.0" />

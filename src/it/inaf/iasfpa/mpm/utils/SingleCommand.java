@@ -1,6 +1,6 @@
 package it.inaf.iasfpa.mpm.utils;
 
-public class SingleLine {
+public class SingleCommand {
 	
 	private final String cmd;
 	private final String wait;
@@ -11,7 +11,7 @@ public class SingleLine {
 	private final String crc;
 	private final String rOpt;
 	
-	public SingleLine(String cmd, String wait, String rt, String msgtype, String msg, String rOpt, String address, String crc) {
+	public SingleCommand(String cmd, String wait, String rt, String msgtype, String msg, String rOpt, String address, String crc) {
 		this.cmd = cmd;
 		this.wait = wait;
 		this.rt = rt;

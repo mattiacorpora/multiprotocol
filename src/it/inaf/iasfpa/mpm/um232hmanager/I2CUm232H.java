@@ -72,7 +72,7 @@ public class I2CUm232H implements ProtocolInterface {
 	
 	@Override
 	public byte[] sendReceive(byte[] sendData) {
-		// i2c non prevede sand/receive
+		// i2c non prevede send/receive
 		return null;
 	}
 

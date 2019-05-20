@@ -1,11 +1,12 @@
 package it.inaf.iasfpa.mpm.view;
 
+import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
 
 import it.inaf.iasfpa.mpm.utils.Script;
 import it.inaf.iasfpa.mpm.utils.ScriptManager;
-import it.inaf.iasfpa.mpm.utils.SingleLine;
+import it.inaf.iasfpa.mpm.utils.SingleCommand;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -18,11 +19,13 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
 
 public class ScriptGuiController implements Initializable {
 	
 	@FXML
-	private TextField message, numberRepeat, waitTime;
+	private TextField message, numberRepeat, waitTime, nOfZero;
 	
 	@FXML
 	private Button addLine, open, save, load, removeLine;
@@ -37,13 +40,24 @@ public class ScriptGuiController implements Initializable {
 	private ComboBox<String> errorControl, mtype, format, slaveAddress, recOptCombo;
 	
 	@FXML
-	private TableView<SingleLine> monitoring, control;
+	private TableView<SingleCommand> monitoring, control;
 		 
 	
 	public boolean i2cMode = false;
-	private ObservableList<SingleLine> listMonitoring = FXCollections.observableArrayList();
-	private ObservableList<SingleLine> listcontrol = FXCollections.observableArrayList();
+	private ObservableList<SingleCommand> listMonitoring = FXCollections.observableArrayList();
+	private ObservableList<SingleCommand> listcontrol = FXCollections.observableArrayList();
+	private MainController main;
 	
+	
+	
+	public MainController getMain() {
+		return main;
+	}
+
+	public void setMain(MainController main) {
+		this.main = main;
+	}
+
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		
@@ -55,44 +69,44 @@ public class ScriptGuiController implements Initializable {
 		ObservableList<String> recOpt = FXCollections.observableArrayList("with ACK", "with NAK", "None");
 		recOptCombo.setItems(recOpt);
 		recOptCombo.setValue(recOpt.get(2));
-		
+		nOfZero.setText("0");
 		format.setValue(formatOpt.get(0));
 		errorControl.setValue(errorOpt.get(2));
 		numberRepeat.setText("1");
 		waitTime.setText("0");
 		// inizio costruzione tabelle
-		TableColumn<SingleLine, String> cmd = new TableColumn<SingleLine, String>("CMD");
+		TableColumn<SingleCommand, String> cmd = new TableColumn<SingleCommand, String>("CMD");
 		cmd.setCellValueFactory(new PropertyValueFactory<>("cmd"));
-		TableColumn<SingleLine, String> wait = new TableColumn<SingleLine, String>("WAIT");
+		TableColumn<SingleCommand, String> wait = new TableColumn<SingleCommand, String>("WAIT");
 		wait.setCellValueFactory(new PropertyValueFactory<>("wait"));
-		TableColumn<SingleLine, String> rt = new TableColumn<SingleLine, String>("RT");
+		TableColumn<SingleCommand, String> rt = new TableColumn<SingleCommand, String>("RT");
 		rt.setCellValueFactory(new PropertyValueFactory<>("rt"));
-		TableColumn<SingleLine, String> type = new TableColumn<SingleLine, String>("MSG TYPE");
+		TableColumn<SingleCommand, String> type = new TableColumn<SingleCommand, String>("MSG TYPE");
 		type.setCellValueFactory(new PropertyValueFactory<>("msgtype"));
-		TableColumn<SingleLine, String> msg = new TableColumn<SingleLine, String>("MSG");
+		TableColumn<SingleCommand, String> msg = new TableColumn<SingleCommand, String>("MSG");
 		msg.setCellValueFactory(new PropertyValueFactory<>("msg"));
-		TableColumn<SingleLine, String> address = new TableColumn<SingleLine, String>("ADDRESS");
+		TableColumn<SingleCommand, String> address = new TableColumn<SingleCommand, String>("ADDRESS");
 		address.setCellValueFactory(new PropertyValueFactory<>("address"));
-		TableColumn<SingleLine, String> rOpt = new TableColumn<SingleLine, String>("REC OPT");
+		TableColumn<SingleCommand, String> rOpt = new TableColumn<SingleCommand, String>("REC OPT");
 		rOpt.setCellValueFactory(new PropertyValueFactory<>("rOpt"));
-		TableColumn<SingleLine, String> checksum = new TableColumn<SingleLine, String>("CHECKSUM");
+		TableColumn<SingleCommand, String> checksum = new TableColumn<SingleCommand, String>("CHECKSUM");
 		checksum.setCellValueFactory(new PropertyValueFactory<>("crc"));
 		
-		TableColumn<SingleLine, String> cmd1 = new TableColumn<SingleLine, String>("CMD");
+		TableColumn<SingleCommand, String> cmd1 = new TableColumn<SingleCommand, String>("CMD");
 		cmd1.setCellValueFactory(new PropertyValueFactory<>("cmd"));
-		TableColumn<SingleLine, String> wait1 = new TableColumn<SingleLine, String>("WAIT");
+		TableColumn<SingleCommand, String> wait1 = new TableColumn<SingleCommand, String>("WAIT");
 		wait1.setCellValueFactory(new PropertyValueFactory<>("wait"));
-		TableColumn<SingleLine, String> rt1 = new TableColumn<SingleLine, String>("RT");
+		TableColumn<SingleCommand, String> rt1 = new TableColumn<SingleCommand, String>("RT");
 		rt1.setCellValueFactory(new PropertyValueFactory<>("rt"));
-		TableColumn<SingleLine, String> type1 = new TableColumn<SingleLine, String>("MSG TYPE");
+		TableColumn<SingleCommand, String> type1 = new TableColumn<SingleCommand, String>("MSG TYPE");
 		type1.setCellValueFactory(new PropertyValueFactory<>("msgtype"));
-		TableColumn<SingleLine, String> msg1 = new TableColumn<SingleLine, String>("MSG");
+		TableColumn<SingleCommand, String> msg1 = new TableColumn<SingleCommand, String>("MSG");
 		msg1.setCellValueFactory(new PropertyValueFactory<>("msg"));
-		TableColumn<SingleLine, String> address1 = new TableColumn<SingleLine, String>("ADDRESS");
+		TableColumn<SingleCommand, String> address1 = new TableColumn<SingleCommand, String>("ADDRESS");
 		address1.setCellValueFactory(new PropertyValueFactory<>("address"));
-		TableColumn<SingleLine, String> rOpt1 = new TableColumn<SingleLine, String>("REC OPT");
+		TableColumn<SingleCommand, String> rOpt1 = new TableColumn<SingleCommand, String>("REC OPT");
 		rOpt1.setCellValueFactory(new PropertyValueFactory<>("rOpt"));
-		TableColumn<SingleLine, String> checksum1 = new TableColumn<SingleLine, String>("CHECKSUM");
+		TableColumn<SingleCommand, String> checksum1 = new TableColumn<SingleCommand, String>("CHECKSUM");
 		checksum1.setCellValueFactory(new PropertyValueFactory<>("crc"));
 		
 		monitoring.getColumns().addAll(cmd, wait, rt, type, msg, address, rOpt, checksum);
@@ -102,7 +116,7 @@ public class ScriptGuiController implements Initializable {
 		monitoring.setItems(listMonitoring);
 		control.setItems(listcontrol);
 		// fine costruzione tabelle
-		System.out.println(recOptCombo.getSelectionModel().getSelectedIndex());
+		
 	}
 	
 	@FXML
@@ -112,6 +126,7 @@ public class ScriptGuiController implements Initializable {
 		String wt = null;
 		String sa = null;
 		String ro = null;
+		String tempmsg = message.getText();
 		if(sendRB.isSelected()) {
 			tempcmd = "S";
 		}
@@ -142,15 +157,28 @@ public class ScriptGuiController implements Initializable {
 		}
 		
 		
+		if(format.getValue().equals("HEX")) {
+			for(int i = 0; i < Integer.parseInt(nOfZero.getText()); i++) {
+				tempmsg += "00";
+			}
+		} else {
+			for(int i = 0; i < Integer.parseInt(nOfZero.getText()); i++) {
+				tempmsg += "0";
+			}
+		}
+		
+		
+		
+		
 		
 		if(threadBox.isSelected() == false) {
-			listcontrol.add(new SingleLine(tempcmd, wt, rept, format.getValue(),
-					message.getText(), ro, sa, errorControl.getValue()));
+			listcontrol.add(new SingleCommand(tempcmd, wt, rept, format.getValue(),
+					tempmsg, ro, sa, errorControl.getValue()));
 			
 		}
 		else if(threadBox.isSelected() == true) {
-			listMonitoring.add(new SingleLine(tempcmd, wt, rept, format.getValue(),
-					message.getText(), ro, sa, errorControl.getValue()));
+			listMonitoring.add(new SingleCommand(tempcmd, "0", rept, format.getValue(),
+					tempmsg, ro, sa, errorControl.getValue()));
 					
 		}
 			
@@ -158,9 +186,9 @@ public class ScriptGuiController implements Initializable {
 	
 	@FXML
 	private void removeLineButtonEvent() {
-		SingleLine rmlineM = monitoring.getSelectionModel().getSelectedItem();
+		SingleCommand rmlineM = monitoring.getSelectionModel().getSelectedItem();
 		int mIndex = monitoring.getSelectionModel().getSelectedIndex();
-		SingleLine rmlineC = control.getSelectionModel().getSelectedItem();
+		SingleCommand rmlineC = control.getSelectionModel().getSelectedItem();
 		int cIndex = control.getSelectionModel().getSelectedIndex();
 		if (rmlineM != null) {
 			listMonitoring.remove(mIndex);
@@ -178,8 +206,8 @@ public class ScriptGuiController implements Initializable {
 	private void saveButtonEvent() {
 		Script script = new Script();
 		ScriptManager sm = new ScriptManager();
-		SingleLine[] mon = new SingleLine[listMonitoring.size()];
-		SingleLine[] con = new SingleLine[listcontrol.size()];
+		SingleCommand[] mon = new SingleCommand[listMonitoring.size()];
+		SingleCommand[] con = new SingleCommand[listcontrol.size()];
 		for(int i = 0; i < mon.length; i++) {
 			mon[i] = listMonitoring.get(i);
 		}
@@ -188,9 +216,56 @@ public class ScriptGuiController implements Initializable {
 		}
 		script.setControl(con);
 		script.setMonitoring(mon);
-		sm.createFileScript(script);
+		File sFile;
+		FileChooser fileChooser = new FileChooser();
+		fileChooser.setTitle("Save");
+		fileChooser.getExtensionFilters().addAll(new ExtensionFilter("Json Files", "*.json"));
+		sFile = fileChooser.showSaveDialog(null);
+		sm.createFileScript(script, sFile);
 		
 		
+	}
+	
+	@FXML
+	public void loadButtonEvent() {
+		Script script = new Script();
+		
+		SingleCommand[] mon = new SingleCommand[listMonitoring.size()];
+		SingleCommand[] con = new SingleCommand[listcontrol.size()];
+		for(int i = 0; i < mon.length; i++) {
+			mon[i] = listMonitoring.get(i);
+		}
+		for(int i = 0; i < con.length; i++) {
+			con[i] = listcontrol.get(i);
+		}
+		script.setControl(con);
+		script.setMonitoring(mon);
+		main.loadScriptText(script);
+		
+		
+	}
+	
+	@FXML
+	public void openButtonEvent() {
+		FileChooser fileChooser = new FileChooser();
+		fileChooser.setTitle("Open");
+		fileChooser.getExtensionFilters().addAll(new ExtensionFilter("Json File", "*.json"));
+		ScriptManager sm = new ScriptManager();
+		Script script = sm.scriptFromJson(fileChooser.showOpenDialog(null));
+		listcontrol.addAll(script.getControl());
+		listMonitoring.addAll(script.getMonitoring());
+		
+	}
+	
+	public void setSlaveAddress(ObservableList<Integer> slaveList){{
+		ObservableList<String> os = FXCollections.observableArrayList();
+		
+		for(int i = 0; i < slaveList.size(); i++) {
+			os.add(String.valueOf(slaveList.get(i)));
+		}
+		slaveAddress.setItems(os);
+	
+	}
 	}
 
 }

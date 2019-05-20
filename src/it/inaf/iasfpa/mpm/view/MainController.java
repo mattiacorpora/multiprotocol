@@ -6,7 +6,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
-
 import it.inaf.iasfpa.mpm.MainApp;
 import it.inaf.iasfpa.mpm.um232hmanager.FIFOUm232H;
 import it.inaf.iasfpa.mpm.um232hmanager.I2CUm232H;
@@ -15,7 +14,11 @@ import it.inaf.iasfpa.mpm.um232hmanager.SPIUm232H;
 import it.inaf.iasfpa.mpm.um232hmanager.UARTUm232H;
 import it.inaf.iasfpa.mpm.um232hmanager.UM232HCommon;
 import it.inaf.iasfpa.mpm.um232hmanager.UM232HDeviceParameters;
+import it.inaf.iasfpa.mpm.utils.DataErrorControl;
 import it.inaf.iasfpa.mpm.utils.DataManager;
+import it.inaf.iasfpa.mpm.utils.Script;
+import it.inaf.iasfpa.mpm.utils.ScriptManager;
+import it.inaf.iasfpa.mpm.utils.SingleCommand;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -48,7 +51,9 @@ public class MainController implements Initializable {
 	private UM232HCommon serv = new UM232HCommon();
 
 	@FXML
-	private Button okButton, resetButton, clearButton, connectButton, disconnectButton, sendButton, receiveButton, sendReceiveButton, saveButton;
+	private Button okButton, resetButton, clearButton, connectButton, disconnectButton,
+					sendButton, receiveButton, sendReceiveButton, saveButton, clearButton2, saveButton2,
+					openButton, runMonitoring, runControl, stopMonitoring, stopControl, createButton;
 
 	@FXML
 	private VBox dinamicVBox;
@@ -72,7 +77,7 @@ public class MainController implements Initializable {
 	private TextField request, nbyte;
 	
 	@FXML
-	private TextArea response;
+	private TextArea response, scriptArea, hystory;
 	
 	@FXML
 	private ImageView schematic;
@@ -87,15 +92,68 @@ public class MainController implements Initializable {
 	private FifoController sonContrFifo;
 	private ScriptGuiController gui2Cont;
 	private Stage primaryStage;
-
+	protected Script script;
+	private ScriptManager sm = new ScriptManager();
+	private Stage dialogStage;
+	private DataErrorControl ec = new DataErrorControl();
+	private boolean reqC, ackM, ackC, stopev;
+	private Thread m, c;
+	
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
 		
 		resetButtonEvent();
-		
-				
+		ackC = true;
+		stopev = false;
+		reqC = false;
 	}
+	
+	protected void loadScriptText(Script script) {
+		this.script = script;
+		scriptArea.setText(sm.scriptToJsonString(this.script));
+		dialogStage.close();
+		runMonitoring.setDisable(false);
+		runControl.setDisable(false);
+		stopMonitoring.setDisable(false);
+		stopControl.setDisable(false);
+		
+	}
+	
+	@FXML
+	private void clearHystory2() {
+		hystory.clear();
+	}
+	
+	@FXML
+	private void saveHystory2() {
+		File sFile;
+		FileChooser fileChooser = new FileChooser();
+		fileChooser.setTitle("Salva");
+		fileChooser.getExtensionFilters().addAll(new ExtensionFilter("Text Files", "*.txt"));
+		sFile = fileChooser.showSaveDialog(null);
 
+		FileWriter fw = null;
+		try {
+			fw = new FileWriter(sFile, true);
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+
+		BufferedWriter bw = new BufferedWriter(fw);
+		String temp = hystory.getText();
+		try {
+			bw.write(temp);
+			bw.flush();
+			bw.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	
+	
 	@FXML
 	private void okButtonEvent() {
 
@@ -187,6 +245,8 @@ public class MainController implements Initializable {
 		hexFormat.setSelected(true);
 		resetButton.setDisable(false);
 		clearButton.setDisable(false);
+		openButton.setDisable(false);
+		createButton.setDisable(false);
 	}
 
 	@FXML
@@ -389,7 +449,14 @@ public class MainController implements Initializable {
 		nbyte.textProperty().addListener((obs, oldText, newText) -> {
 			parameters.setNumbRecByte(Integer.parseInt(nbyte.getText()));
 		   
-		}); 
+		});
+		openButton.setDisable(true);
+		createButton.setDisable(true);
+		runMonitoring.setDisable(true);
+		runControl.setDisable(true);
+		stopMonitoring.setDisable(true);
+		stopControl.setDisable(true);
+		
 	}
 	
 	@FXML
@@ -463,27 +530,315 @@ public class MainController implements Initializable {
 	@FXML
 	private void createButtonEvent() {
 		try {
+			
 			FXMLLoader loader = new FXMLLoader();
 			loader.setLocation(MainApp.class.getResource("view/script_gui.fxml"));
 			AnchorPane page = (AnchorPane) loader.load();
 			gui2Cont = loader.getController();
-			Stage dialogStage = new Stage();
+			gui2Cont.setMain(this);
+			dialogStage = new Stage();
 			dialogStage.setTitle("Gui2");
 			dialogStage.initModality(Modality.WINDOW_MODAL);
 			dialogStage.initOwner(primaryStage);
 			Scene scene = new Scene(page);
 			dialogStage.setScene(scene);
+			if(mode.compareTo("I2C") == 0) {
+				gui2Cont.setSlaveAddress(FXCollections.observableArrayList(parameters.getListSlaveAddress()));
+			}
 			dialogStage.showAndWait();
-
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 
 		}
 	}
 	
+	@FXML
+	private void openButtonEvent() {
+		FileChooser fileChooser = new FileChooser();
+		fileChooser.setTitle("Open");
+		fileChooser.getExtensionFilters().addAll(new ExtensionFilter("Json File", "*.json"));
+		ScriptManager sm = new ScriptManager();
+		this.script = sm.scriptFromJson(fileChooser.showOpenDialog(null));
+		scriptArea.setText(sm.scriptToJsonString(script));
+		
+		
+	}
+	
 	public void scanBus() {
 		ObservableList<Integer> slavesaddress = FXCollections.observableArrayList(parameters.getListSlaveAddress());
 		slaveAddress.setItems(slavesaddress);
 	}
+	
+	
+	
+	public void runSingleCommand(SingleCommand sl) {
+		
+		
+		if(mode.compareTo("I2C") == 0) {
+			parameters.setSlaveAddress(Integer.parseInt(sl.getAddress()));
+		}
+		
+		switch (sl.getCmd()) {
+		
+		case "S":{
+			
+			byte[] tdata, tdata1, tdata2;
+			
+			if(sl.getMsgtype().compareTo("HEX") == 0) {
+				tdata = DataManager.hexStringToByte(sl.getMsg()); 
+			} else {
+				tdata = (sl.getMsg()).getBytes();
+			}
+			
+			if (sl.getCrc().compareTo("XOR")== 0) {
+				tdata1 = new byte[tdata.length+1];
+				System.arraycopy(tdata, 0, tdata1, 0, tdata.length);
+				tdata1[tdata1.length-1] = ec.checkSum(tdata);
+			} else if (sl.getCrc().compareTo("CRC16")== 0) {
+				tdata1 = new byte[tdata.length+2];
+				System.arraycopy(tdata, 0, tdata1, 0, tdata.length);
+				System.arraycopy(ec.crc16Calc(tdata), 0, tdata1, tdata.length, 2);
+			} else {
+				tdata1 = tdata;
+			}
+			
+			if (mode.compareTo("UART") == 0 && sl.getMsgtype().compareTo("CHAR") == 0) {
+				tdata2 = new byte[tdata1.length+2];
+				System.arraycopy(tdata1, 0, tdata2, 0, tdata1.length);
+				tdata2[tdata2.length-2] = (byte)'\r';
+				tdata2[tdata2.length-1] = (byte)'\n';
+			}else {
+				tdata2 = tdata1;
+			}
+			for(int i = 0; i < Integer.parseInt(sl.getRt()); i++) {
+				p.send(tdata2);
+				if (mode.compareTo("UART") != 0) {
+				hystory.appendText("S: " + DataManager.ByteToCharString(tdata2) + "\r" + "\n");
+				}
+				if (mode.compareTo("UART") == 0) {
+					if(sl.getMsgtype().compareTo("HEX") == 0) {
+					hystory.appendText("S: " + DataManager.ByteToCharString(tdata2) + "\r" + "\n");
+					}else {
+						hystory.appendText("S: " + DataManager.ByteToCharString(tdata2));
+					}
+				}
+			}
+			break;
+			
+			
+			}
+		
+		case "R":{
+			if(mode.compareTo("I2C") == 0) {
+				if(sl.getrOpt().compareTo("with ACK") == 0) {
+					parameters.setAckkreceive(true);
+				} else if(sl.getrOpt().compareTo("with ACK") == 0) {
+					parameters.setAckkreceive(false);
+				}
+			}
+			
+			for(int i = 0; i < Integer.parseInt(sl.getRt()); i++) {
+				byte[] buffer = null;
+				buffer = p.receive();
+				if (buffer != null) {
+					if (sl.getMsgtype().compareTo("HEX") == 0) {
+						hystory.appendText("R: " + DataManager.ByteToHexString(buffer) + "\r" + "\n");
+						
+					} else if (sl.getMsgtype().compareTo("CHAR") == 0) {
+						if(mode.compareTo("UART") == 0) {
+							hystory.appendText("R: " +DataManager.ByteToCharString(buffer));
+						} else {
+							hystory.appendText("R: " +DataManager.ByteToCharString(buffer) + "\r" + "\n");
+						}
+						
+					}
+				} else
+					hystory.appendText("R: " + "Timeout" + "\r" + "\n");
+			}
+			
+		break;
+		}
+		
+		case "S/R":{
+			
+			byte[] tdata, tdata1, tdata2;
+			
+			if(sl.getMsgtype().compareTo("HEX") == 0) {
+				tdata = DataManager.hexStringToByte(sl.getMsg()); 
+			} else {
+				tdata = (sl.getMsg()).getBytes();
+			}
+			
+			if (sl.getCrc().compareTo("XOR")== 0) {
+				tdata1 = new byte[tdata.length+1];
+				System.arraycopy(tdata, 0, tdata1, 0, tdata.length);
+				tdata1[tdata1.length-1] = ec.checkSum(tdata);
+			} else if (sl.getCrc().compareTo("CRC16")== 0) {
+				tdata1 = new byte[tdata.length+2];
+				System.arraycopy(tdata, 0, tdata1, 0, tdata.length);
+				System.arraycopy(ec.crc16Calc(tdata), 0, tdata1, tdata.length, 2);
+			} else {
+				tdata1 = tdata;
+			}
+			
+			if (mode.compareTo("UART") == 0 && sl.getMsgtype().compareTo("CHAR") == 0) {
+				tdata2 = new byte[tdata1.length+2];
+				System.arraycopy(tdata1, 0, tdata2, 0, tdata1.length);
+				tdata2[tdata2.length-2] = (byte)'\r';
+				tdata2[tdata2.length-1] = (byte)'\n';
+			}else {
+				tdata2 = tdata1;
+			}
+			
+			byte[] buffer = null;
+			
+			
+			for(int i = 0; i < Integer.parseInt(sl.getRt()); i++) {
+				buffer =p.sendReceive(tdata2);
+				
+				if (mode.compareTo("UART") != 0) {
+				response.appendText("S: " + DataManager.ByteToCharString(tdata2) + "\r" + "\n");
+				
+				}
+				if (mode.compareTo("UART") == 0) {
+					if(sl.getMsgtype().compareTo("HEX") == 0) {
+					hystory.appendText("S: " + DataManager.ByteToCharString(tdata2) + "\r" + "\n");
+					}else {
+						hystory.appendText("S: " + DataManager.ByteToCharString(tdata2));
+					}
+				}
+				
+				if (buffer != null) {
+					if (sl.getMsgtype().compareTo("HEX") == 0) {
+						hystory.appendText("R: " + DataManager.ByteToHexString(buffer) + "\r" + "\n");
+						
+					} else if (sl.getMsgtype().compareTo("CHAR") == 0) {
+						if(mode.compareTo("UART") == 0) {
+							hystory.appendText("R: " +DataManager.ByteToCharString(buffer));
+						} else {
+							hystory.appendText("R: " +DataManager.ByteToCharString(buffer) + "\r" + "\n");
+						}
+						
+					}
+				} else
+					hystory.appendText("R: " + "Timeout" + "\r" + "\n");
+			}
+			break;
+		}
+	}
+	}
+	
+	@FXML
+	private void runMonitoringEvent() {
+		
+			
+		if(script.getMonitoring().length != 0) {
+			m = new Thread(new MonitoringThread());
+			m.start();
+		}
+		
+		
+	}
+	
+	@FXML
+	private void stopMonitoringEvent() {
+		m.interrupt();
+	}
+	
+	
+	@FXML
+	private void runControlEvent() {
+		
+		if(script.getControl().length != 0) {
+			c = new Thread(new ControlThread());
+			c.start();
+			 
+		}
+	}
+	
+	@FXML
+	private void stopControlEvent() {
+		c.interrupt();
+	}
 
+	
+	// inizio thread monitoring
+	public class MonitoringThread implements Runnable{
+		
+		
+		@Override
+		public void run() {
+			while(!stopev) {
+				for(int i = 0; i< script.getMonitoring().length; i++) {
+					if(!reqC) {
+						try {
+							Thread.sleep(Integer.parseInt(script.getMonitoring()[i].getWait()));
+						} catch (NumberFormatException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						runSingleCommand(script.getMonitoring()[i]);
+						
+					}else {
+						ackM = true;
+						while(!ackC) {
+							try {
+								Thread.sleep(1);
+							} catch (InterruptedException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+						}
+					}
+				}
+				
+				
+			}
+			
+		}
+		
+	}
+	//fine thread monitoring
+	
+	
+	//inizio thread control
+	public class ControlThread implements Runnable{
+
+		@Override
+		public void run() {
+			while(!stopev) {
+				reqC = true;
+				while(!ackM) {
+					try {
+						Thread.sleep(1);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				ackC = false;
+				for(int i = 0; i < script.getControl().length; i++) {
+					try {
+						Thread.sleep(Integer.parseInt(script.getControl()[i].getWait()));
+					} catch (NumberFormatException | InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					runSingleCommand(script.getControl()[i]);
+				}
+				ackC = true;
+			}
+			
+		}
+		
+	}
+	//fine thread control
+	
+	
+	
+//fine classe MainController	
 }
