@@ -11,6 +11,7 @@
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ToggleGroup?>
@@ -201,7 +202,7 @@
                               </Label>
                               <TabPane tabClosingPolicy="UNAVAILABLE">
                                 <tabs>
-                                  <Tab text="SINGLE">
+                                  <Tab fx:id="single" onSelectionChanged="#singleTabEvent" text="SINGLE">
                                        <content>
                                           <VBox>
                                              <children>
@@ -253,21 +254,34 @@
                                           </VBox>
                                        </content>
                                   </Tab>
-                                  <Tab text="MULTI">
+                                  <Tab fx:id="multi" onSelectionChanged="#multiTabEvent" text="MULTI">
                                     <content>
                                       <AnchorPane minHeight="0.0" minWidth="0.0">
                                              <children>
                                                 <VBox layoutX="239.0" layoutY="53.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                                    <children>
-                                                      <Label text="SCRIPT" />
-                                                      <TextArea fx:id="scriptArea" prefHeight="200.0" />
-                                                      <HBox alignment="CENTER_RIGHT" spacing="15.0">
+                                                      <HBox alignment="CENTER" spacing="15.0">
                                                          <children>
                                                             <Button fx:id="createButton" mnemonicParsing="false" onAction="#createButtonEvent" text="CREATE" />
                                                             <Button fx:id="openButton" mnemonicParsing="false" onAction="#openButtonEvent" text="OPEN" />
+                                                         </children>
+                                                      </HBox>
+                                                      <Label text="LIST MONITORING" />
+                                                      <TableView fx:id="tableMonitoring" prefHeight="150.0" />
+                                                      <HBox alignment="CENTER_RIGHT" spacing="15.0">
+                                                         <children>
                                                             <Button fx:id="runMonitoring" mnemonicParsing="false" onAction="#runMonitoringEvent" text="RUN MONITORING" />
-                                                            <Button fx:id="runControl" mnemonicParsing="false" onAction="#runControlEvent" text="RUN CONTROL" />
                                                             <Button fx:id="stopMonitoring" mnemonicParsing="false" onAction="#stopMonitoringEvent" text="STOP MONITORING" />
+                                                         </children>
+                                                         <padding>
+                                                            <Insets top="5.0" />
+                                                         </padding>
+                                                      </HBox>
+                                                      <Label text="LIST CONTROL" />
+                                                      <TableView fx:id="tableControl" prefHeight="150.0" />
+                                                      <HBox alignment="CENTER_RIGHT" spacing="15.0">
+                                                         <children>
+                                                            <Button fx:id="runControl" mnemonicParsing="false" onAction="#runControlEvent" text="RUN CONTROL" />
                                                             <Button fx:id="stopControl" mnemonicParsing="false" onAction="#stopControlEvent" text="STOP CONTROL" />
                                                          </children>
                                                          <padding>
@@ -280,7 +294,7 @@
                                                          </VBox.margin>
                                                       </Separator>
                                                       <Label text="HISTORY" />
-                                                      <TextArea fx:id="hystory" prefHeight="200.0" />
+                                                      <TextArea fx:id="hystory" prefHeight="100.0" />
                                                       <HBox alignment="CENTER_RIGHT" spacing="15.0">
                                                          <children>
                                                             <Button fx:id="clearButton2" mnemonicParsing="false" onAction="#clearHystory2" text="CLEAR" />

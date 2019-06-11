@@ -51,10 +51,11 @@ public class Spi implements Closeable {
 	public static final int SPI_MOSI_MASK = 2;
 	public static final int SPI_MISO_MASK = 4;
 	public static final int SPI_CS_MASK = 8;
+	public static final int SPI_CON_MASK = 16;
 	
 	// SCK, MOSI and CS are outputs (pin = 1)
 	private static final byte SPI_OUTPUT_PIN_MASK =
-			(byte) (SPI_CS_MASK | SPI_MOSI_MASK | SPI_SCK_MASK);
+			(byte) (SPI_CS_MASK | SPI_MOSI_MASK | SPI_SCK_MASK | SPI_CON_MASK);
 	
 	private static final int DEFAULT_CLOCK_RATE = 100000;
 	
@@ -120,9 +121,16 @@ public void assertSelect() {
 			for (int i = 0; i < 5; i++) {
 				mpsse.setDataBitsLow((byte) (selectActiveHigh ? 9 : 1), SPI_OUTPUT_PIN_MASK);
 			}
+			if(mode == SpiMode.M3 ){
+				mpsse.setDataBitsLow((byte) (selectActiveHigh ? 25 : 17), SPI_OUTPUT_PIN_MASK);
+			}
 		}else {
 			for (int i = 0; i < 5; i++) {
 				mpsse.setDataBitsLow((byte) (selectActiveHigh ? 8 : 0), SPI_OUTPUT_PIN_MASK);
+				
+			}
+			if(mode == SpiMode.M1){
+				mpsse.setDataBitsLow((byte) (selectActiveHigh ? 24 : 16), SPI_OUTPUT_PIN_MASK);
 			}
 		}
 				
@@ -149,10 +157,12 @@ public void assertSelect() {
 			for (int i = 0; i < 5; i++) {
 				mpsse.setDataBitsLow((byte) (selectActiveHigh ? 1 : 9), SPI_OUTPUT_PIN_MASK);
 			}
+			
 		}else {
 			for (int i = 0; i < 5; i++) {
 				mpsse.setDataBitsLow((byte) (selectActiveHigh ? 0 : 8), SPI_OUTPUT_PIN_MASK);
 			}
+			
 		}
 		
 	}
@@ -195,6 +205,7 @@ public void assertSelect() {
 		mpsse.delay(20);
 		
 		mpsse.disableLoopback();
+		
 		mpsse.execute();
 		mpsse.delay(30);
 		
@@ -214,7 +225,9 @@ public void assertSelect() {
 	 * 							details
 	 */
 	public byte[] readBits(int bitCount) throws FTDIException {
-
+		if(mode == SpiMode.M1 || mode == SpiMode.M3) {
+			setDataBitsHigh((byte)0x80, (byte)0x80);
+		}
 		int byteCount = bitCount / 8;	// complete bytes to receive
 		int extraBits = bitCount % 8;	// leftover bits to receive
 		
@@ -233,6 +246,10 @@ public void assertSelect() {
 			mpsse.enqueue((byte) count);					// Length
 		}
 		
+		if(mode == SpiMode.M1 || mode == SpiMode.M3) {
+			setDataBitsHigh((byte)0x00, (byte)0x80);
+		}
+		clearSelect();
 		execute();
 		
 		if (extraBits > 0) {
@@ -254,7 +271,11 @@ public void assertSelect() {
 	 * 							details
 	 */
 	public byte[] readWriteBits(int bitCount, byte[] data) throws FTDIException {
-
+		
+		if(mode == SpiMode.M1 || mode == SpiMode.M3) {
+			setDataBitsHigh((byte)0x80, (byte)0x80);
+		}
+		
 		int byteCount = bitCount / 8;	// complete bytes to transmit
 		int extraBits = bitCount % 8;	// leftover bits to transmit
 		
@@ -274,7 +295,13 @@ public void assertSelect() {
 			mpsse.enqueue((byte) count);					// Length
 			mpsse.enqueue(data[byteCount]);					// Byte1
 		}
+		if(mode == SpiMode.M1 || mode == SpiMode.M3) {
+			setDataBitsHigh((byte)0x00, (byte)0x80);
+		}
 		clearSelect();
+		
+		
+		
 		execute();
 		
 		if (extraBits > 0) {
@@ -385,8 +412,27 @@ public void assertSelect() {
 	 */
 	public void transactWrite(int bitCount, byte[] data) throws FTDIException {
 		assertSelect();
+//		if(mode == SpiMode.M1 || mode == SpiMode.M3) {
+//			setDataBitsHigh((byte)0x80, (byte)0x80);
+//		} else {
+//			setDataBitsHigh((byte)0x00, (byte)0x80);
+//		}
+//		
 		writeBits(bitCount, data);
+		
+			
 		clearSelect();
+					
+		
+//		if(mode == SpiMode.M1 || mode == SpiMode.M3) {
+//				setDataBitsLow((byte) (selectActiveHigh ? 1 : 9), SPI_OUTPUT_PIN_MASK);		
+//				setDataBitsHigh((byte)0x00, (byte)0x80);
+//				setDataBitsLow((byte) (selectActiveHigh ? 0 : 8), SPI_OUTPUT_PIN_MASK);
+//			
+//			
+//		}
+		
+		
 		execute();
 	}
 

@@ -103,6 +103,9 @@ public class UARTUm232H implements ProtocolInterface{
 		Thread t = new Thread(new SerialWriter());
 		t.setPriority(10);
 		t.start();
+		while(t.isAlive()) {
+			
+		}
 	}
 
 	@Override	

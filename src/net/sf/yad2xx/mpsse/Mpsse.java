@@ -423,6 +423,7 @@ public class Mpsse implements Closeable {
 		enqueue(SET_DATA_BITS_HIGH.getValue());
 		enqueue(value);
 		enqueue(direction);
+		
 	}
 	
 	/**
@@ -437,6 +438,7 @@ public class Mpsse implements Closeable {
 		enqueue(SET_DATA_BITS_LOW.getValue());
 		enqueue(value);
 		enqueue(direction);
+		
 	}
 	
 	/**

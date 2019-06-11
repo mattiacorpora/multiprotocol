@@ -54,15 +54,17 @@ public class SPIUm232H implements ProtocolInterface {
 
 	@Override
 	public byte[] receive() {
+		byte[] rec = null;
 		try {
+			
 			spi.assertSelect();
-			spi.readBits(param.getNumbRecByte() * 8);
-			spi.clearSelect();
+			rec = spi.readBits(param.getNumbRecByte() * 8);
+			
 		} catch (FTDIException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return null;
+		return rec;
 	}
 
 	@Override

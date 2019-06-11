@@ -30,7 +30,7 @@ public class SpiController implements Initializable {
 	public void initialize(URL location, ResourceBundle resources) {
 
 		clockfrequency.setText("100000");
-		ObservableList<String> spimodeoption = FXCollections.observableArrayList("Mode 0", "Mode 2");
+		ObservableList<String> spimodeoption = FXCollections.observableArrayList("Mode 0", "Mode 1", "Mode 2", "Mode 3");
 		ObservableList<Boolean> csStatus = FXCollections.observableArrayList(true, false);
 		spimode.setItems(spimodeoption);
 		csStatusCombo.setItems(csStatus);
@@ -52,9 +52,15 @@ public class SpiController implements Initializable {
 		case "Mode 0":
 			param.setSpimode(SpiMode.M0);
 			break;
+		case "Mode 1":
+			param.setSpimode(SpiMode.M1);
+			break;	
 		case "Mode 2":
 			param.setSpimode(SpiMode.M2);
 			break;
+		case "Mode 3":
+			param.setSpimode(SpiMode.M3);
+			break;	
 		default:
 			param.setSpimode(SpiMode.M0);
 			break;

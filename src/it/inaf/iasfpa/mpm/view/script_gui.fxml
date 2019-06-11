@@ -77,17 +77,10 @@
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                </padding>
             </HBox>
-            <HBox alignment="CENTER_LEFT">
+            <HBox alignment="CENTER_RIGHT" spacing="20.0">
                <children>
-                  <CheckBox fx:id="threadBox" mnemonicParsing="false" text="RUN IN MONITORING THREAD" />
-               </children>
-               <padding>
-                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-               </padding>
-            </HBox>
-            <HBox alignment="CENTER_RIGHT">
-               <children>
-                  <Button fx:id="addLine" mnemonicParsing="false" onAction="#addButtonEvent" text="ADD" />
+                  <Button fx:id="addMonitoringLine" mnemonicParsing="false" onAction="#addMonitoringButtonEvent" text="ADD IN MONITORING THREAD" />
+                  <Button fx:id="addControlLine" mnemonicParsing="false" onAction="#addControlButtonEvent" text="ADD IN CONTROL THREAD" />
                </children>
                <padding>
                   <Insets bottom="5.0" left="5.0" right="10.0" top="5.0" />
@@ -108,7 +101,6 @@
             </TableView>
             <HBox alignment="CENTER_RIGHT" spacing="15.0">
                <children>
-                  <Button fx:id="removeLine" mnemonicParsing="false" onAction="#removeLineButtonEvent" text="REMOVE LINE" />
                   <Button fx:id="open" mnemonicParsing="false" onAction="#openButtonEvent" text="OPEN" />
                   <Button fx:id="save" mnemonicParsing="false" onAction="#saveButtonEvent" text="SAVE" />
                   <Button fx:id="load" mnemonicParsing="false" onAction="#loadButtonEvent" text="LOAD" />
