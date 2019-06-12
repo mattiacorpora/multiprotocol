@@ -8,7 +8,7 @@ import net.sf.yad2xx.FTDIException;
 
 public class FIFOUm232H implements ProtocolInterface {
 
-	private final int MAX_BUFFER_SIZE = 65536;
+	
 	private UM232HDeviceParameters param;
 	private Device dev;
 
@@ -64,8 +64,8 @@ public class FIFOUm232H implements ProtocolInterface {
 	@Override
 	public void send(byte[] sendData) {
 
-		int npack = sendData.length / MAX_BUFFER_SIZE;
-		int ppack = sendData.length % MAX_BUFFER_SIZE;
+		int npack = sendData.length / param.getDeviceBufferSize();
+		int ppack = sendData.length % param.getDeviceBufferSize();
 
 		if (param.isSyncMode()) {
 			try {
@@ -80,21 +80,22 @@ public class FIFOUm232H implements ProtocolInterface {
 				for (int i = 0; i < npack; i++) {
 					while (dev.getStatus().getTxBytes() != 0) {
 					}
-					dev.write(Arrays.copyOfRange(sendData, i * MAX_BUFFER_SIZE, (i + 1) * MAX_BUFFER_SIZE));
+					dev.write(Arrays.copyOfRange(sendData, i * param.getDeviceBufferSize(),
+							(i + 1) * param.getDeviceBufferSize()));
+					Thread.sleep(param.getDelaypack());
 				}
-			} catch (FTDIException e) {
+			} catch (FTDIException | InterruptedException e) {
 
 				e.printStackTrace();
 			}
 		}
 		if (ppack > 0) {
 			try {
-				for (int i = 0; i < ppack; i++) {
-					while (MAX_BUFFER_SIZE - dev.getStatus().getTxBytes() < ppack) {
-					}
-					dev.write(Arrays.copyOfRange(sendData, (npack * MAX_BUFFER_SIZE),
-							((npack) * MAX_BUFFER_SIZE) + ppack));
+
+				while (param.getDeviceBufferSize() - dev.getStatus().getTxBytes() < ppack) {
 				}
+				dev.write(Arrays.copyOfRange(sendData, (npack * param.getDeviceBufferSize()), ((npack) * param.getDeviceBufferSize()) + ppack));
+
 			} catch (FTDIException e) {
 
 				e.printStackTrace();

@@ -1,6 +1,7 @@
 package it.inaf.iasfpa.mpm.um232hmanager;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import net.sf.yad2xx.Device;
 import net.sf.yad2xx.FTDIException;
@@ -49,10 +50,20 @@ public class I2CUm232H implements ProtocolInterface {
 	@Override
 	public void send(byte[] sendData) {
 		try {
-
-			i2c.transactWrite(param.getSlaveAddress(), sendData);
-			i2c.delay(100);
-
+			int npack = sendData.length / param.getDeviceBufferSize();
+			int nbytep = sendData.length % param.getDeviceBufferSize();
+			if(npack > 0) {
+				for(int i = 0; i<npack; i++) {
+					i2c.transactWrite(param.getSlaveAddress(), Arrays.copyOfRange(sendData, i * param.getDeviceBufferSize(), (i + 1) * param.getDeviceBufferSize()));
+					i2c.delay(param.getDelaypack());
+				}
+				
+			}
+			if(nbytep > 0) {
+				i2c.transactWrite(param.getSlaveAddress(), Arrays.copyOfRange(sendData, (npack * param.getDeviceBufferSize()),
+							(npack * param.getDeviceBufferSize()) + nbytep));
+			}
+			
 		} catch (FTDIException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

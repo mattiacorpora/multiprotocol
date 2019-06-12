@@ -18,6 +18,8 @@ public class UM232HDeviceParameters {
 	private boolean csStatus;
 	private ArrayList<Integer> listSlaveAddress;
 	private boolean syncMode;
+	private int deviceBufferSize;
+	private int delaypack;
 	
 	public boolean isSyncMode() {
 		return syncMode;
@@ -101,5 +103,17 @@ public class UM232HDeviceParameters {
 	}
 	public void setListSlaveAddress(ArrayList<Integer> list) {
 		this.listSlaveAddress = list;
+	}
+	public int getDeviceBufferSize() {
+		return deviceBufferSize;
+	}
+	public void setDeviceBufferSize(int deviceBufferSize) {
+		this.deviceBufferSize = deviceBufferSize;
+	}
+	public int getDelaypack() {
+		return delaypack;
+	}
+	public void setDelaypack(int delaypack) {
+		this.delaypack = delaypack;
 	}
 }

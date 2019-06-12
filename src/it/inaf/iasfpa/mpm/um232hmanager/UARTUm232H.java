@@ -2,6 +2,7 @@ package it.inaf.iasfpa.mpm.um232hmanager;
 
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import net.sf.yad2xx.*;
 
@@ -152,15 +153,32 @@ public class UARTUm232H implements ProtocolInterface{
 	public class SerialWriter implements Runnable {
 
 		public void run() {
-
-			for (int i = 0; i < sndMsg.length; i++) {
+			
+			int npack = sndMsg.length / param.getDeviceBufferSize();
+			int nbytep = sndMsg.length % param.getDeviceBufferSize();
+			if(npack > 0) {
+				for(int i = 0; i < npack; i++) {
+					try {
+						dev.write(Arrays.copyOfRange(sndMsg, i * param.getDeviceBufferSize(), (i + 1) * param.getDeviceBufferSize()));
+						Thread.sleep(param.getDelaypack());
+					} catch (FTDIException | InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				
+				
+			}
+			if(nbytep >0) {
 				try {
-					dev.write(sndMsg[i]);
+					dev.write(Arrays.copyOfRange(sndMsg, (npack * param.getDeviceBufferSize()),
+								(npack * param.getDeviceBufferSize()) + nbytep));
 				} catch (FTDIException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
+			
 
 		}
 	}

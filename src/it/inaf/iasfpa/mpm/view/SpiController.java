@@ -23,6 +23,9 @@ public class SpiController implements Initializable {
 
 	@FXML
 	public ComboBox<String> spimode;
+	
+	@FXML
+	public TextField mtuField, delayField;
 
 	private UM232HDeviceParameters param;
 
@@ -36,7 +39,8 @@ public class SpiController implements Initializable {
 		csStatusCombo.setItems(csStatus);
 		csStatusCombo.setValue(false);
 		spimode.setValue(spimodeoption.get(0));
-		
+		mtuField.setText("0");
+		delayField.setText("0");
 		
 		clockfrequency.textProperty().addListener((obs, oldText, newText) -> {
 		    param.setClockrate(Integer.parseInt(clockfrequency.getText()));
@@ -86,7 +90,8 @@ public class SpiController implements Initializable {
 		this.param.setSpimode(SpiMode.M0);
 		this.param.setCsStatus(false);
 		this.param.setNumbRecByte(1);
-		
+		this.param.setDeviceBufferSize(65536);
+		this.param.setDelaypack(0);
 		
 	}
 	

@@ -10,6 +10,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.TextField;
 import net.sf.yad2xx.FTDIConstants;
 
 public class UartController implements Initializable {
@@ -20,6 +21,9 @@ public class UartController implements Initializable {
 	
 	@FXML
 	protected ComboBox<Integer> baudrateCombo, databitCombo;
+	
+	@FXML
+	public TextField mtuField, delayField;
 	
 	private UM232HDeviceParameters param;
 	
@@ -43,6 +47,8 @@ public class UartController implements Initializable {
 		databitCombo.setValue(8);
 		stopbitCombo.setValue("1");
 		baudrateCombo.setValue(FTDIConstants.FT_BAUD_9600);
+		mtuField.setText("0");
+		delayField.setText("0");
 		
 	}
 	
@@ -72,6 +78,8 @@ public class UartController implements Initializable {
 		this.param.setStopbit("1");
 		this.param.setParity("Even");
 		this.param.setDatabit(FTDIConstants.FT_BITS_8);
+		this.param.setDeviceBufferSize(65536);
+		this.param.setDelaypack(0);
 	}
 
 }

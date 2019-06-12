@@ -8,6 +8,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.RadioButton;
+import javafx.scene.control.TextField;
 
 /**
  * FifoController
@@ -20,12 +21,16 @@ public class FifoController implements Initializable {
 	@FXML
 	public RadioButton syncRadioButton, asyncRadioButton;
 	
+	@FXML
+	public TextField mtuField, delayField;
+	
 	private UM232HDeviceParameters param;
 	
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
 		syncRadioButton.setSelected(true);
-
+		mtuField.setText("0");
+		delayField.setText("0");
 	}
 
 	@FXML

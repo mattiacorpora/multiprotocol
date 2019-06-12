@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.ResourceBundle;
 import it.inaf.iasfpa.mpm.MainApp;
 import it.inaf.iasfpa.mpm.um232hmanager.FIFOUm232H;
@@ -105,7 +107,7 @@ public class MainController implements Initializable {
 	private boolean reqC, ackM, ackC, stopM, stopC;
 	private Thread m, c;
 	private boolean ve = true;
-	
+	private SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH.mm.ss.SSS");
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
 
@@ -282,11 +284,27 @@ public class MainController implements Initializable {
 				sonContrSPI.spimode.setDisable(true);
 				sonContrSPI.csStatusCombo.setDisable(true);
 				nbyte.setDisable(false);
+				if(Integer.parseInt(sonContrSPI.mtuField.getText()) == 0) {
+					parameters.setDeviceBufferSize(65536);
+				} else {
+					parameters.setDeviceBufferSize(Integer.parseInt(sonContrSPI.mtuField.getText()));
+				}
+				parameters.setDelaypack(Integer.parseInt(sonContrSPI.delayField.getText()));
+				sonContrSPI.mtuField.setDisable(true);
+				sonContrSPI.delayField.setDisable(true);
 			} else if (mode.compareTo("UART") == 0) {
 				sonContrUart.baudrateCombo.setDisable(true);
 				sonContrUart.databitCombo.setDisable(true);
 				sonContrUart.parityCombo.setDisable(true);
 				sonContrUart.stopbitCombo.setDisable(true);
+				if(Integer.parseInt(sonContrUart.mtuField.getText()) == 0) {
+					parameters.setDeviceBufferSize(65536);
+				} else {
+					parameters.setDeviceBufferSize(Integer.parseInt(sonContrUart.mtuField.getText()));
+				}
+				parameters.setDelaypack(Integer.parseInt(sonContrUart.delayField.getText()));
+				sonContrUart.mtuField.setDisable(true);
+				sonContrUart.delayField.setDisable(true);
 			} else if (mode.compareTo("I2C") == 0) {
 				sonContrI2C.clockFrequencyCombo.setDisable(true);
 				radioButtonAck.setDisable(false);
@@ -295,11 +313,27 @@ public class MainController implements Initializable {
 				radioButtonAck.setSelected(true);
 				parameters.setAckkreceive(true);
 				nbyte.setDisable(false);
+				if(Integer.parseInt(sonContrI2C.mtuField.getText()) == 0) {
+					parameters.setDeviceBufferSize(65536);
+				} else {
+					parameters.setDeviceBufferSize(Integer.parseInt(sonContrI2C.mtuField.getText()));
+				}
+				parameters.setDelaypack(Integer.parseInt(sonContrI2C.delayField.getText()));
+				sonContrI2C.mtuField.setDisable(true);
+				sonContrI2C.delayField.setDisable(true);
 				scanBus();
 			} else if (mode.compareTo("FIFO245") == 0) {
 				sonContrFifo.asyncRadioButton.setDisable(true);
 				sonContrFifo.syncRadioButton.setDisable(true);
 				sendReceiveButton.setDisable(true);
+				if(Integer.parseInt(sonContrFifo.mtuField.getText()) == 0) {
+					parameters.setDeviceBufferSize(65536);
+				} else {
+					parameters.setDeviceBufferSize(Integer.parseInt(sonContrFifo.mtuField.getText()));
+				}
+				parameters.setDelaypack(Integer.parseInt(sonContrFifo.delayField.getText()));
+				sonContrFifo.mtuField.setDisable(true);
+				sonContrFifo.delayField.setDisable(true);
 			}
 		}
 		
@@ -330,17 +364,25 @@ public class MainController implements Initializable {
 			sonContrSPI.clockfrequency.setDisable(false);
 			sonContrSPI.spimode.setDisable(false);
 			sonContrSPI.csStatusCombo.setDisable(false);
+			sonContrSPI.mtuField.setDisable(false);
+			sonContrSPI.delayField.setDisable(false);
 		} else if (mode.compareTo("UART") == 0) {
 			sonContrUart.baudrateCombo.setDisable(false);
 			sonContrUart.databitCombo.setDisable(false);
 			sonContrUart.parityCombo.setDisable(false);
 			sonContrUart.stopbitCombo.setDisable(false);
+			sonContrUart.mtuField.setDisable(false);
+			sonContrUart.delayField.setDisable(false);
 		} else if (mode.compareTo("I2C") == 0) {
 			sonContrI2C.clockFrequencyCombo.setDisable(false);
 			slaveAddress.setDisable(true);
+			sonContrI2C.mtuField.setDisable(false);
+			sonContrI2C.delayField.setDisable(false);
 		} else if (mode.compareTo("FIFO245") == 0) {
 			sonContrFifo.asyncRadioButton.setDisable(false);
 			sonContrFifo.syncRadioButton.setDisable(false);
+			sonContrFifo.mtuField.setDisable(false);
+			sonContrFifo.delayField.setDisable(false);
 
 		}
 		multi.setDisable(true);
@@ -350,10 +392,10 @@ public class MainController implements Initializable {
 
 	@FXML
 	private void sendButtonEvent() {
-
+		
 		String sendData = request.getText();
-		response.appendText("S: " + sendData + "\r" + "\n");
-		if (hexFormat.isSelected()) {
+		response.appendText("Time:"+sdf.format(new Date()) + "     "+"S: " + sendData + "\r" + "\n");
+		if (hexFormat.isSelected()){
 			p.send(DataManager.hexStringToByte(sendData));
 		} else if (charFormat.isSelected()) {
 			if (mode.compareTo("UART") == 0) {
@@ -364,6 +406,7 @@ public class MainController implements Initializable {
 
 		}
 		request.setText("");
+		
 	}
 
 	@FXML

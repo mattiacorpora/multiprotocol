@@ -10,6 +10,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.TextField;
 import net.sf.yad2xx.mpsse.I2C;
 
 public class I2cController implements Initializable {
@@ -17,6 +18,8 @@ public class I2cController implements Initializable {
 	@FXML
 	public ComboBox<Integer> clockFrequencyCombo;
 	
+	@FXML
+	public TextField mtuField, delayField;
 	
 	
 	
@@ -30,7 +33,8 @@ public class I2cController implements Initializable {
 				I2C.FOUR_HUNDRED_KHZ);
 		clockFrequencyCombo.setItems(clockrateoption);
 		clockFrequencyCombo.setValue(I2C.ONE_HUNDRED_KHZ);
-		
+		mtuField.setText("0");
+		delayField.setText("0");
 		                                                                                                                                                                                                                                                                          
 		
 	}
@@ -39,7 +43,8 @@ public class I2cController implements Initializable {
 		this.param = param;
 		this.param.setClockrate(I2C.ONE_HUNDRED_KHZ);
 		this.param.setAckkreceive(true);
-		
+		this.param.setDeviceBufferSize(655536);
+		this.param.setDelaypack(0);
 		
 	}
 	
