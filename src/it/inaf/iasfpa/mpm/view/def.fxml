@@ -12,7 +12,6 @@
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TableView?>
-<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.image.ImageView?>
@@ -20,7 +19,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane stylesheets="@application_style.css" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.inaf.iasfpa.mpm.view.MainController">
+<AnchorPane stylesheets="@application_style.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.inaf.iasfpa.mpm.view.MainController">
    <children>
       <VBox layoutX="188.0" layoutY="47.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
@@ -236,11 +235,7 @@
                                                       <Insets left="5.0" />
                                                    </padding>
                                                 </Label>
-                                                <TextArea fx:id="response" editable="false" VBox.vgrow="ALWAYS">
-                                                   <VBox.margin>
-                                                      <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                                   </VBox.margin>
-                                                </TextArea>
+                                                <TableView fx:id="historySingleTable" />
                                                 <HBox alignment="CENTER_RIGHT" spacing="15.0">
                                                    <children>
                                                       <Button mnemonicParsing="false" onAction="#saveButtonEvent" text="SAVE" />
@@ -297,7 +292,7 @@
                                                          </VBox.margin>
                                                       </Separator>
                                                       <Label text="HISTORY" />
-                                                      <TextArea fx:id="hystory" prefHeight="100.0" />
+                                                      <TableView fx:id="historyMultiTable" prefHeight="150.0" />
                                                       <HBox alignment="CENTER_RIGHT" spacing="15.0">
                                                          <children>
                                                             <Button fx:id="clearButton2" mnemonicParsing="false" onAction="#clearHystory2" text="CLEAR" />

@@ -21,6 +21,7 @@ import it.inaf.iasfpa.mpm.utils.DataManager;
 import it.inaf.iasfpa.mpm.utils.Script;
 import it.inaf.iasfpa.mpm.utils.ScriptManager;
 import it.inaf.iasfpa.mpm.utils.SingleCommand;
+import it.inaf.iasfpa.mpm.utils.SingleCommandLog;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -82,8 +83,8 @@ public class MainController implements Initializable {
 	@FXML
 	private TextField request, nbyte;
 
-	@FXML
-	private TextArea response, hystory;
+	// @FXML
+	// private TextArea response, hystory;
 
 	@FXML
 	private ImageView schematic;
@@ -91,6 +92,10 @@ public class MainController implements Initializable {
 	@FXML
 	private TableView<SingleCommand> tableControl, tableMonitoring;
 
+	@FXML
+	private TableView<SingleCommandLog> historyMultiTable, historySingleTable;
+	private ObservableList<SingleCommandLog> historyListSingle = FXCollections.observableArrayList();
+	private ObservableList<SingleCommandLog> historyListMulti = FXCollections.observableArrayList();
 	private Device dev;
 	private ProtocolInterface p;
 	private UM232HDeviceParameters parameters = new UM232HDeviceParameters();
@@ -107,12 +112,38 @@ public class MainController implements Initializable {
 	private boolean reqC, ackM, ackC, stopM, stopC;
 	private Thread m, c;
 	private boolean ve = true;
-	private SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH.mm.ss.SSS");
+	private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH.mm.ss.SSS");
+
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
 
 		resetButtonEvent();
 		
+		
+		TableColumn<SingleCommandLog, String> tm = new TableColumn<SingleCommandLog, String>("TIME");
+		tm.setCellValueFactory(new PropertyValueFactory<>("istant"));
+		TableColumn<SingleCommandLog, String> thrsrc = new TableColumn<SingleCommandLog, String>("THREAD");
+		thrsrc.setCellValueFactory(new PropertyValueFactory<>("threadSrc"));
+		TableColumn<SingleCommandLog, String> reqd = new TableColumn<SingleCommandLog, String>("REQUEST");
+		reqd.setCellValueFactory(new PropertyValueFactory<>("request"));
+		TableColumn<SingleCommandLog, String> resd = new TableColumn<SingleCommandLog, String>("RESPONSE");
+		resd.setCellValueFactory(new PropertyValueFactory<>("response"));
+		historySingleTable.getColumns().addAll(tm, reqd, resd);
+		historySingleTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+		historySingleTable.setItems(historyListSingle);
+
+		TableColumn<SingleCommandLog, String> tm1 = new TableColumn<SingleCommandLog, String>("TIME");
+		tm1.setCellValueFactory(new PropertyValueFactory<>("istant"));
+		TableColumn<SingleCommandLog, String> thrsrc1 = new TableColumn<SingleCommandLog, String>("THREAD");
+		thrsrc1.setCellValueFactory(new PropertyValueFactory<>("threadSrc"));
+		TableColumn<SingleCommandLog, String> reqd1 = new TableColumn<SingleCommandLog, String>("REQUEST");
+		reqd1.setCellValueFactory(new PropertyValueFactory<>("request"));
+		TableColumn<SingleCommandLog, String> resd1 = new TableColumn<SingleCommandLog, String>("RESPONSE");
+		resd1.setCellValueFactory(new PropertyValueFactory<>("response"));
+		historyMultiTable.getColumns().addAll(tm1, thrsrc1, reqd1, resd1);
+		historyMultiTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+		historyMultiTable.setItems(historyListMulti);
+
 	}
 
 	protected void loadScriptText(Script script) {
@@ -133,15 +164,16 @@ public class MainController implements Initializable {
 
 	@FXML
 	private void clearHystory2() {
-		hystory.clear();
+		historyListMulti.clear();
+		// hystory.clear();
 	}
 
 	@FXML
 	private void saveHystory2() {
 		File sFile;
 		FileChooser fileChooser = new FileChooser();
-		fileChooser.setTitle("Salva");
-		fileChooser.getExtensionFilters().addAll(new ExtensionFilter("Text Files", "*.txt"));
+		fileChooser.setTitle("Save");
+		fileChooser.getExtensionFilters().addAll(new ExtensionFilter("CSV Files", "*.csv"));
 		sFile = fileChooser.showSaveDialog(null);
 
 		FileWriter fw = null;
@@ -153,9 +185,10 @@ public class MainController implements Initializable {
 		}
 
 		BufferedWriter bw = new BufferedWriter(fw);
-		String temp = hystory.getText();
+
+		// String temp = hystory.getText();
 		try {
-			bw.write(temp);
+			bw.write(tableHistoryMToCsv());
 			bw.flush();
 			bw.close();
 		} catch (IOException e) {
@@ -274,7 +307,7 @@ public class MainController implements Initializable {
 			hexFormat.setDisable(false);
 			charFormat.setDisable(false);
 			request.setDisable(false);
-			response.setDisable(false);
+			// response.setDisable(false);
 			sendButton.setDisable(false);
 			receiveButton.setDisable(false);
 			sendReceiveButton.setDisable(false);
@@ -284,7 +317,7 @@ public class MainController implements Initializable {
 				sonContrSPI.spimode.setDisable(true);
 				sonContrSPI.csStatusCombo.setDisable(true);
 				nbyte.setDisable(false);
-				if(Integer.parseInt(sonContrSPI.mtuField.getText()) == 0) {
+				if (Integer.parseInt(sonContrSPI.mtuField.getText()) == 0) {
 					parameters.setDeviceBufferSize(65536);
 				} else {
 					parameters.setDeviceBufferSize(Integer.parseInt(sonContrSPI.mtuField.getText()));
@@ -297,7 +330,7 @@ public class MainController implements Initializable {
 				sonContrUart.databitCombo.setDisable(true);
 				sonContrUart.parityCombo.setDisable(true);
 				sonContrUart.stopbitCombo.setDisable(true);
-				if(Integer.parseInt(sonContrUart.mtuField.getText()) == 0) {
+				if (Integer.parseInt(sonContrUart.mtuField.getText()) == 0) {
 					parameters.setDeviceBufferSize(65536);
 				} else {
 					parameters.setDeviceBufferSize(Integer.parseInt(sonContrUart.mtuField.getText()));
@@ -313,7 +346,7 @@ public class MainController implements Initializable {
 				radioButtonAck.setSelected(true);
 				parameters.setAckkreceive(true);
 				nbyte.setDisable(false);
-				if(Integer.parseInt(sonContrI2C.mtuField.getText()) == 0) {
+				if (Integer.parseInt(sonContrI2C.mtuField.getText()) == 0) {
 					parameters.setDeviceBufferSize(65536);
 				} else {
 					parameters.setDeviceBufferSize(Integer.parseInt(sonContrI2C.mtuField.getText()));
@@ -326,7 +359,7 @@ public class MainController implements Initializable {
 				sonContrFifo.asyncRadioButton.setDisable(true);
 				sonContrFifo.syncRadioButton.setDisable(true);
 				sendReceiveButton.setDisable(true);
-				if(Integer.parseInt(sonContrFifo.mtuField.getText()) == 0) {
+				if (Integer.parseInt(sonContrFifo.mtuField.getText()) == 0) {
 					parameters.setDeviceBufferSize(65536);
 				} else {
 					parameters.setDeviceBufferSize(Integer.parseInt(sonContrFifo.mtuField.getText()));
@@ -336,7 +369,7 @@ public class MainController implements Initializable {
 				sonContrFifo.delayField.setDisable(true);
 			}
 		}
-		
+
 		multi.setDisable(false);
 		single.setDisable(false);
 		createButton.setDisable(false);
@@ -354,7 +387,7 @@ public class MainController implements Initializable {
 		hexFormat.setDisable(true);
 		charFormat.setDisable(true);
 		request.setDisable(true);
-		response.setDisable(true);
+		// response.setDisable(true);
 		sendButton.setDisable(true);
 		receiveButton.setDisable(true);
 		sendReceiveButton.setDisable(true);
@@ -392,21 +425,24 @@ public class MainController implements Initializable {
 
 	@FXML
 	private void sendButtonEvent() {
-		
+
 		String sendData = request.getText();
-		response.appendText("Time:"+sdf.format(new Date()) + "     "+"S: " + sendData + "\r" + "\n");
-		if (hexFormat.isSelected()){
+
+		if (hexFormat.isSelected()) {
+			historyListSingle.add(new SingleCommandLog(sdf.format(new Date()), null, sendData, "-"));
 			p.send(DataManager.hexStringToByte(sendData));
 		} else if (charFormat.isSelected()) {
 			if (mode.compareTo("UART") == 0) {
+				historyListSingle.add(new SingleCommandLog(sdf.format(new Date()), null, sendData + "\r" + "\n", "-"));
 				p.send((sendData + "\r" + "\n").getBytes());
 			} else {
+				historyListSingle.add(new SingleCommandLog(sdf.format(new Date()), null, sendData, "-"));
 				p.send(sendData.getBytes());
 			}
 
 		}
 		request.setText("");
-		
+
 	}
 
 	@FXML
@@ -416,18 +452,16 @@ public class MainController implements Initializable {
 		buffer = p.receive();
 		if (buffer != null) {
 			if (hexFormat.isSelected()) {
-				response.appendText("R: " + DataManager.ByteToHexString(buffer) + "\r" + "\n");
-
+				historyListSingle.add(
+						new SingleCommandLog(sdf.format(new Date()), null, "-", DataManager.ByteToHexString(buffer)));
 			} else if (charFormat.isSelected()) {
-				if (mode.compareTo("UART") == 0) {
-					response.appendText("R: " + DataManager.ByteToCharString(buffer));
-				} else {
-					response.appendText("R: " + DataManager.ByteToCharString(buffer) + "\r" + "\n");
-				}
 
+				historyListSingle.add(
+						new SingleCommandLog(sdf.format(new Date()), null, "-", DataManager.ByteToCharString(buffer)));
 			}
 		} else
-			response.appendText("R: " + "Timeout" + "\r" + "\n");
+
+			historyListSingle.add(new SingleCommandLog(sdf.format(new Date()), null, "-", "TIMEOUT"));
 
 	}
 
@@ -436,7 +470,8 @@ public class MainController implements Initializable {
 
 		String temp = request.getText();
 		request.setText("");
-		response.appendText("S: " + temp + "\r" + "\n");
+		// response.appendText("S: " + temp + "\r" + "\n");
+
 		byte[] buffer = null;
 		if (charFormat.isSelected()) {
 			if (mode.compareTo("UART") == 0) {
@@ -446,34 +481,35 @@ public class MainController implements Initializable {
 
 			buffer = p.sendReceive(temp.getBytes());
 			if (buffer != null) {
-				if (mode.compareTo("UART") == 0) {
-					response.appendText("R: " + DataManager.ByteToCharString(buffer));
-				} else {
-					response.appendText("R: " + DataManager.ByteToCharString(buffer) + '\r' + '\n');
-				}
+				historyListSingle.add(
+						new SingleCommandLog(sdf.format(new Date()), null, temp, DataManager.ByteToCharString(buffer)));
 
 			} else
-				response.appendText("R: " + "Timeout" + '\r' + '\n');
+				historyListSingle.add(new SingleCommandLog(sdf.format(new Date()), null, temp, "TIMEOUT"));
 
 		} else if (hexFormat.isSelected()) {
 
 			buffer = p.sendReceive(DataManager.hexStringToByte(temp));
 			if (buffer != null) {
-				response.appendText("R: " + DataManager.ByteToHexString(buffer) + '\r' + '\n');
+				historyListSingle.add(
+						new SingleCommandLog(sdf.format(new Date()), null, temp, DataManager.ByteToHexString(buffer)));
+
 			} else
-				response.appendText("R: " + "Timeout" + '\r' + '\n');
+				historyListSingle.add(new SingleCommandLog(sdf.format(new Date()), null, temp, "TIMEOUT"));
+			// response.appendText("R: " + "Timeout" + '\r' + '\n');
 
 		}
 	}
 
 	@FXML
 	private void clearButtonevent() {
-		response.clear();
+		historyListSingle.clear();
+		// response.clear();
 	}
 
 	@FXML
 	private void resetButtonEvent() {
-		if(p != null) {
+		if (p != null) {
 			disconnectButtonEvent();
 		}
 		ve = false;
@@ -491,7 +527,7 @@ public class MainController implements Initializable {
 		hexFormat.setDisable(true);
 		charFormat.setDisable(true);
 		request.setDisable(true);
-		response.setDisable(true);
+		// response.setDisable(true);
 		sendButton.setDisable(true);
 		receiveButton.setDisable(true);
 		sendReceiveButton.setDisable(true);
@@ -509,7 +545,7 @@ public class MainController implements Initializable {
 			parameters.setNumbRecByte(Integer.parseInt(nbyte.getText()));
 
 		});
-		
+
 		openButton.setDisable(true);
 		createButton.setDisable(true);
 		runMonitoring.setDisable(true);
@@ -520,16 +556,16 @@ public class MainController implements Initializable {
 		single.setDisable(true);
 		createButton.setDisable(true);
 		openButton.setDisable(true);
-		
+
 		ackC = true;
 		stopM = false;
 		reqC = false;
-		ackM = true;
+		ackM = false;
 		stopC = false;
 		ve = true;
-		
+
 	}
-	
+
 	@FXML
 	private void multiTabEvent() {
 		hexFormat.setDisable(true);
@@ -538,9 +574,9 @@ public class MainController implements Initializable {
 		radioButtonNack.setDisable(true);
 		nbyte.setDisable(true);
 		slaveAddress.setDisable(true);
-		
+
 	}
-	
+
 	@FXML
 	private void singleTabEvent() {
 		hexFormat.setDisable(false);
@@ -549,10 +585,9 @@ public class MainController implements Initializable {
 		radioButtonNack.setDisable(false);
 		nbyte.setDisable(false);
 		slaveAddress.setDisable(false);
-		
+
 	}
-	
-	
+
 	@FXML
 	public void receiveWithAckEvent(ActionEvent event) {
 		parameters.setAckkreceive(true);
@@ -570,7 +605,7 @@ public class MainController implements Initializable {
 
 	@FXML
 	public void modeSelectedEvent(ActionEvent event) {
-		if(ve) {
+		if (ve) {
 			Image img;
 			switch (operationMode.getValue()) {
 			case "UART":
@@ -592,7 +627,7 @@ public class MainController implements Initializable {
 			schematic.setImage(img);
 			schematic.setVisible(true);
 		}
-		
+
 	}
 
 	@FXML
@@ -600,7 +635,7 @@ public class MainController implements Initializable {
 		File sFile;
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.setTitle("Salva");
-		fileChooser.getExtensionFilters().addAll(new ExtensionFilter("Text Files", "*.txt"));
+		fileChooser.getExtensionFilters().addAll(new ExtensionFilter("CSV Files", "*.csv"));
 		sFile = fileChooser.showSaveDialog(null);
 
 		FileWriter fw = null;
@@ -612,9 +647,9 @@ public class MainController implements Initializable {
 		}
 
 		BufferedWriter bw = new BufferedWriter(fw);
-		String temp = response.getText();
+
 		try {
-			bw.write(temp);
+			bw.write(tableHistorySToCsv());
 			bw.flush();
 			bw.close();
 		} catch (IOException e) {
@@ -646,7 +681,7 @@ public class MainController implements Initializable {
 			}
 			gui2Cont.i2cModeSelected();
 			dialogStage.showAndWait();
-			
+
 		} catch (IOException e) {
 			e.printStackTrace();
 
@@ -672,7 +707,7 @@ public class MainController implements Initializable {
 		stopControl.setDisable(false);
 
 	}
-	
+
 	@FXML
 	private void runMonitoringEvent() {
 
@@ -688,7 +723,7 @@ public class MainController implements Initializable {
 	@FXML
 	private void stopMonitoringEvent() {
 		stopM = true;
-		
+
 	}
 
 	@FXML
@@ -712,8 +747,7 @@ public class MainController implements Initializable {
 		ObservableList<Integer> slavesaddress = FXCollections.observableArrayList(parameters.getListSlaveAddress());
 		slaveAddress.setItems(slavesaddress);
 	}
-	
-	
+
 	// inizio run single command
 
 	public void runSingleCommand(SingleCommand sl) {
@@ -755,22 +789,18 @@ public class MainController implements Initializable {
 				tdata2 = tdata1;
 			}
 			for (int i = 0; i < Integer.parseInt(sl.getRt()); i++) {
-				p.send(tdata2);
-				if (mode.compareTo("UART") != 0) {
-					if (sl.getMsgtype().compareTo("HEX") == 0) {
-						hystory.appendText("S: " + DataManager.ByteToHexString(tdata2) + "\r" + "\n");
-					} else {
-						hystory.appendText("S: " + DataManager.ByteToCharString(tdata2) + "\r" + "\n");
-					}
 
+				if (sl.getMsgtype().compareTo("HEX") == 0) {
+					historyListMulti.add(new SingleCommandLog(sdf.format(new Date()), ((reqC && ackM ) ? "C" : "M"),
+							DataManager.ByteToHexString(tdata2), "-"));
+
+				} else {
+
+					historyListMulti.add(new SingleCommandLog(sdf.format(new Date()), ((reqC && ackM ) ? "C" : "M"),
+							DataManager.ByteToCharString(tdata2), "-"));
 				}
-				if (mode.compareTo("UART") == 0) {
-					if (sl.getMsgtype().compareTo("HEX") == 0) {
-						hystory.appendText("S: " + DataManager.ByteToHexString(tdata2) + "\r" + "\n");
-					} else {
-						hystory.appendText("S: " + DataManager.ByteToCharString(tdata2));
-					}
-				}
+				p.send(tdata2);
+
 			}
 			break;
 
@@ -790,18 +820,18 @@ public class MainController implements Initializable {
 				buffer = p.receive();
 				if (buffer != null) {
 					if (sl.getMsgtype().compareTo("HEX") == 0) {
-						hystory.appendText("R: " + DataManager.ByteToHexString(buffer) + "\r" + "\n");
+						historyListMulti.add(new SingleCommandLog(sdf.format(new Date()), ((reqC && ackM ) ? "C" : "M"), "-",
+								DataManager.ByteToHexString(buffer)));
 
 					} else if (sl.getMsgtype().compareTo("CHAR") == 0) {
-						if (mode.compareTo("UART") == 0) {
-							hystory.appendText("R: " + DataManager.ByteToCharString(buffer));
-						} else {
-							hystory.appendText("R: " + DataManager.ByteToCharString(buffer) + "\r" + "\n");
-						}
+
+						historyListMulti.add(new SingleCommandLog(sdf.format(new Date()), ((reqC && ackM ) ? "C" : "M"), "-",
+								DataManager.ByteToCharString(buffer)));
 
 					}
 				} else
-					hystory.appendText("R: " + "Timeout" + "\r" + "\n");
+					historyListMulti
+							.add(new SingleCommandLog(sdf.format(new Date()), ((reqC && ackM ) ? "C" : "M"), "-", "TIMEOUT"));
 			}
 
 			break;
@@ -842,44 +872,35 @@ public class MainController implements Initializable {
 
 			for (int i = 0; i < Integer.parseInt(sl.getRt()); i++) {
 				buffer = p.sendReceive(tdata2);
-
-				if (mode.compareTo("UART") != 0) {
-					if (sl.getMsgtype().compareTo("HEX") == 0) {
-						hystory.appendText("S: " + DataManager.ByteToHexString(tdata2)  + "\r" + "\n");
-					} else {
-						hystory.appendText("S: " + DataManager.ByteToCharString(tdata2) + "\r" + "\n");
-					}
-
-				}
-				if (mode.compareTo("UART") == 0) {
-					if (sl.getMsgtype().compareTo("HEX") == 0) {
-						hystory.appendText("S: " + DataManager.ByteToCharString(tdata2) + "\r" + "\n");
-					} else {
-						hystory.appendText("S: " + DataManager.ByteToCharString(tdata2));
-					}
-				}
-
 				if (buffer != null) {
+
 					if (sl.getMsgtype().compareTo("HEX") == 0) {
-						hystory.appendText("R: " + DataManager.ByteToHexString(buffer) + "\r" + "\n");
+						historyListMulti.add(new SingleCommandLog(sdf.format(new Date()), ((reqC && ackM ) ? "C" : "M"),
+								DataManager.ByteToHexString(tdata2), DataManager.ByteToHexString(buffer)));
 
-					} else if (sl.getMsgtype().compareTo("CHAR") == 0) {
-						if (mode.compareTo("UART") == 0) {
-							hystory.appendText("R: " + DataManager.ByteToCharString(buffer));
-						} else {
-							hystory.appendText("R: " + DataManager.ByteToCharString(buffer) + "\r" + "\n");
-						}
-
+					} else {
+						historyListMulti.add(new SingleCommandLog(sdf.format(new Date()), ((reqC && ackM ) ? "C" : "M"),
+								DataManager.ByteToCharString(tdata2), DataManager.ByteToCharString(buffer)));
 					}
-				} else
-					hystory.appendText("R: " + "Timeout" + "\r" + "\n");
+
+				} else {
+					if (sl.getMsgtype().compareTo("HEX") == 0) {
+						historyListMulti.add(new SingleCommandLog(sdf.format(new Date()), ((reqC && ackM ) ? "C" : "M"),
+								DataManager.ByteToHexString(tdata2), "TIMEOUT"));
+
+					} else {
+						historyListMulti.add(new SingleCommandLog(sdf.format(new Date()), ((reqC && ackM ) ? "C" : "M"),
+								DataManager.ByteToCharString(tdata2), "TIMEOUT"));
+					}
+					
+				}
+
 			}
 			break;
 		}
 		}
 	}
-	//fine run single command
-	
+	// fine run single command
 
 	private void madeTable(ObservableList<SingleCommand> listMonitoring, ObservableList<SingleCommand> listcontrol) {
 		// costruzione tabella monitoring
@@ -946,6 +967,25 @@ public class MainController implements Initializable {
 		tableControl.setItems(listcontrol);
 	}
 
+	public String tableHistorySToCsv() {
+		String temp = "TIME" + '\t' + "REQUEST" + '\t' + "RESPONSE" + '\r' + '\n';
+		for (int i = 0; i < historyListSingle.size(); i++) {
+			temp = temp + historyListSingle.get(i).getIstant() + '\t' + historyListSingle.get(i).getRequest() + '\t'
+					+ historyListSingle.get(i).getResponse() + '\r' + '\n';
+		}
+		return temp;
+	}
+
+	public String tableHistoryMToCsv() {
+		String temp = "TIME" + '\t' + "THREAD" + '\t' + "REQUEST" + '\t' + "RESPONSE" + '\r' + '\n';
+		for (int i = 0; i < historyListSingle.size(); i++) {
+			temp = temp + historyListSingle.get(i).getIstant() + '\t' + historyListSingle.get(i).getThreadSrc() + '\t'
+					+ historyListSingle.get(i).getRequest() + '\t' + historyListSingle.get(i).getResponse() + '\r'
+					+ '\n';
+		}
+		return temp;
+	}
+
 	// inizio thread monitoring
 	public class MonitoringThread implements Runnable {
 
@@ -956,10 +996,10 @@ public class MainController implements Initializable {
 					if (!reqC) {
 						try {
 							Thread.sleep(Integer.parseInt(script.getMonitoring()[i].getWait()));
-						} catch (NumberFormatException | InterruptedException  e) {
+						} catch (NumberFormatException | InterruptedException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
-						} 
+						}
 						runSingleCommand(script.getMonitoring()[i]);
 
 					} else {
@@ -1001,7 +1041,7 @@ public class MainController implements Initializable {
 			}
 			ackC = false;
 			for (int i = 0; i < script.getControl().length; i++) {
-				if(!stopC) {
+				if (!stopC) {
 					try {
 						Thread.sleep(Integer.parseInt(script.getControl()[i].getWait()));
 					} catch (NumberFormatException | InterruptedException e) {
@@ -1009,11 +1049,11 @@ public class MainController implements Initializable {
 						e.printStackTrace();
 					}
 					runSingleCommand(script.getControl()[i]);
-				}else {
+				} else {
 					break;
 				}
 			}
-				
+
 			ackC = true;
 			reqC = false;
 			runControl.setDisable(false);
