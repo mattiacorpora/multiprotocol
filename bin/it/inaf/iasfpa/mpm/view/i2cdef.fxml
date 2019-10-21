@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox alignment="CENTER" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.inaf.iasfpa.mpm.view.I2cController">
+   <children>
+      <HBox alignment="CENTER" spacing="15.0">
+         <children>
+            <Label text="CLOCK FREQUENCY [Hz]" />
+            <ComboBox fx:id="clockFrequencyCombo" onAction="#clockFrequencyComboEvent" prefWidth="150.0" />
+         </children>
+         <padding>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </padding>
+      </HBox>
+      <HBox alignment="CENTER" spacing="15.0">
+         <children>
+            <Label text="MTU [bytes] (0 for MAX)" />
+            <TextField fx:id="mtuField" />
+            <Label text="DEALAY (ms)" />
+            <TextField fx:id="delayField" />
+         </children>
+         <padding>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </padding>
+      </HBox>
+   </children>
+   <padding>
+      <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+   </padding>
+</VBox>

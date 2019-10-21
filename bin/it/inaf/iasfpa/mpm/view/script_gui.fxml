@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.inaf.iasfpa.mpm.view.ScriptGuiController">
+   <children>
+      <VBox layoutX="314.0" layoutY="40.0" spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <Label text="SCRIPT CREATOR" />
+            <Separator prefWidth="200.0" />
+            <HBox alignment="CENTER_LEFT" spacing="10.0">
+               <padding>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </padding>
+               <children>
+                  <Label text="MESSAGE" />
+                  <TextField fx:id="message" />
+                  <Label text="+ N° of 0" />
+                  <TextField fx:id="nOfZero" />
+                  <Label text="+" />
+                  <ComboBox fx:id="errorControl" prefWidth="150.0" />
+                  <Separator orientation="VERTICAL" />
+                  <Label text="FORMAT:" />
+                  <ComboBox fx:id="format" prefWidth="150.0" />
+               </children>
+            </HBox>
+            <HBox alignment="CENTER_LEFT" spacing="10.0">
+               <children>
+                  <CheckBox fx:id="repeatBox" mnemonicParsing="false" text="REPEAT FOR" />
+                  <TextField fx:id="numberRepeat" />
+                  <Label text="TIMES" />
+                  <Separator orientation="VERTICAL" />
+                  <CheckBox fx:id="waitBox" mnemonicParsing="false" text="WAIT TIME" />
+                  <TextField fx:id="waitTime" />
+                  <Label text="mSec" />
+               </children>
+               <padding>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </padding>
+            </HBox>
+            <HBox alignment="CENTER_LEFT" spacing="10.0">
+               <padding>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </padding>
+               <children>
+                  <Label text="SLAVE ADDRESS (only I2C)" textAlignment="CENTER" />
+                  <ComboBox fx:id="slaveAddress" prefWidth="150.0" />
+                  <Separator orientation="VERTICAL" />
+                  <Label text="RECEIVE OPTION (only I2C)" />
+                  <ComboBox fx:id="recOptCombo" prefWidth="150.0" />
+               </children>
+            </HBox>
+            <HBox alignment="CENTER_LEFT" spacing="10.0">
+               <children>
+                  <Label text="COMMAND TYPE:" />
+                  <RadioButton fx:id="sendRB" mnemonicParsing="false" text="SEND">
+                     <toggleGroup>
+                        <ToggleGroup fx:id="group" />
+                     </toggleGroup>
+                  </RadioButton>
+                  <RadioButton fx:id="receiveRB" mnemonicParsing="false" text="RECEIVE" toggleGroup="$group" />
+                  <RadioButton fx:id="sendRecRB" mnemonicParsing="false" text="SEND/RECEIVE" toggleGroup="$group" />
+               </children>
+               <padding>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </padding>
+            </HBox>
+            <HBox alignment="CENTER_RIGHT" spacing="20.0">
+               <children>
+                  <Button fx:id="addMonitoringLine" mnemonicParsing="false" onAction="#addMonitoringButtonEvent" text="ADD IN MONITORING THREAD" />
+                  <Button fx:id="addControlLine" mnemonicParsing="false" onAction="#addControlButtonEvent" text="ADD IN CONTROL THREAD" />
+               </children>
+               <padding>
+                  <Insets bottom="5.0" left="5.0" right="10.0" top="5.0" />
+               </padding>
+            </HBox>
+            <Separator prefWidth="200.0" />
+            <Label text="MONITORING THREAD" />
+            <TableView fx:id="monitoring" prefHeight="200.0">
+               <columnResizePolicy>
+                  <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+               </columnResizePolicy>
+            </TableView>
+            <Label text="CONTROL THREAD" />
+            <TableView fx:id="control" prefHeight="200.0">
+               <columnResizePolicy>
+                  <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+               </columnResizePolicy>
+            </TableView>
+            <HBox alignment="CENTER_RIGHT" spacing="15.0">
+               <children>
+                  <Button fx:id="open" mnemonicParsing="false" onAction="#openButtonEvent" text="OPEN" />
+                  <Button fx:id="save" mnemonicParsing="false" onAction="#saveButtonEvent" text="SAVE" />
+                  <Button fx:id="load" mnemonicParsing="false" onAction="#loadButtonEvent" text="LOAD" />
+               </children>
+               <padding>
+                  <Insets bottom="5.0" left="5.0" right="10.0" top="5.0" />
+               </padding>
+            </HBox>
+         </children>
+         <padding>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </padding>
+      </VBox>
+   </children>
+</AnchorPane>

@@ -668,7 +668,7 @@ public class MainController implements Initializable {
 			gui2Cont = loader.getController();
 			gui2Cont.setMain(this);
 			dialogStage = new Stage();
-			dialogStage.setTitle("Gui2");
+			dialogStage.setTitle("Script Creator");
 			dialogStage.initModality(Modality.WINDOW_MODAL);
 			dialogStage.initOwner(primaryStage);
 			Scene scene = new Scene(page);
